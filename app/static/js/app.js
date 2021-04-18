@@ -12,15 +12,18 @@ app.component('app-header', {
     name: 'AppHeader',
     template: `
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-      <a class="navbar-brand" href="#">Lab 7</a>
+    <span class="navbar-brand mb-0 h1 nav-header"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</span>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
     
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
+            <router-link class="nav-link" to="/">Register <span class="sr-only">(current)</span></router-link>
+          </li>
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/">Login <span class="sr-only">(current)</span></router-link>
           </li>
         </ul>
       </div>
@@ -47,9 +50,8 @@ app.component('app-footer', {
 const Home = {
     name: 'Home',
     template: `
-    <div class="jumbotron">
-        <h1>Lab 7</h1>
-        <p class="lead">In this lab we will demonstrate VueJS working with Forms and Form Validation from Flask-WTF.</p>
+    <div>
+        <h1>Home</h1>
     </div>
     `,
     data() {
