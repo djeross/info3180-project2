@@ -1,11 +1,57 @@
 body {
-    padding-top: 5rem;
+    padding-top: 3.5rem;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
 }
 
-.bg-primary {
+nav.bg-primary {
     background-color: #202938 !important;
 }
 
 .nav-header {
     font-size: 15px;
+}
+
+.flex-area {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.btn {
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+}
+
+.bg-secondary {
+    background-color: #14B7A6 !important;
+}
+
+.home-div {
+    position:absolute;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  left:0px;
+  width: 100%;
+  height: 100%;
+}
+
+.fit {
+    width: 100%;
+    height: 100%;
+    
+}
+
+img {
+    /*width: 698px;*/
+    width: auto;
+    height: 100%;
+    object-fit: cover;
+}
+
+.intro {
+    padding-left: 100px;
+    padding-right: 100px;
 }

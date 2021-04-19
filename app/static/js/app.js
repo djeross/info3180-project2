@@ -50,9 +50,19 @@ app.component('app-footer', {
 const Home = {
     name: 'Home',
     template: `
-    <div>
-        <h1>Home</h1>
-    </div>
+        <div class="d-flex align-items-center home-div col-md-12">
+            <div class="row align-items-center col-md-6 intro">
+                <h1 class="font-weight-bold">Buy and Sell Cars Online</h1>
+                <p class="mt-2 mb-4 text-secondary">United Auto Sales provides the fastest, easiest and most user friendly way to buy or sell cars online. Find a Great Price on the Vehicle You Want</p>
+                <div class="flex-area">
+                    <button class="btn bg-primary text-white" type="button">Resister</button>
+                    <button class="btn bg-secondary text-white" type="button">Login</button>
+                </div>
+            </div>
+            <div class="fit col-md-6">
+                <img class="" src="static/images/car3.jpg">
+            </div>
+        </div>
     `,
     data() {
         return {}
