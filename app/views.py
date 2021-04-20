@@ -10,12 +10,116 @@ from flask import render_template, request, flash, url_for, redirect, jsonify
 
 from .forms import RegisterForm, LoginForm, ExploreForm, CarForm
 
-import datetime
+from datetime import datetime
 
 ###
 # Routing for your application.
 ###
 
+@app.route('/api/register', methods=['POST'])
+def register():
+
+    form = RegisterForm()
+
+    if request.method == 'POST':
+
+        if form.validate_on_submit():
+
+            username = form.username.data
+            password = form.password.data
+            fullname = form.fullname.data
+            email = form.email.data
+            location = form.location.data
+            biography = form.biography.data
+            photo = form.photo.data
+            date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            filename = secure_filename(photo.filename)
+
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            flash('User successfully registered.', 'success')
+            
+            data = [
+                {
+                'username': username,
+                'name': fullname,
+                'photo': filename,
+                'email': email,
+                'location': location,
+                'biography': biography,
+                'date_joined': date
+            }]
+
+            return jsonify(data=data)
+
+        else:
+            return jsonify(errors=form_errors(form))
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+
+    form = LoginForm()
+
+    if request.method == 'POST':
+
+        if form.validate_on_submit():
+
+            pass
+
+        else:
+            return jsonify(errors=form_errors(form))
+
+           return jsonify(errors=form_errors(form))
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+
+    data = [{'message': 'Log out successful'}]
+    return jsonify(data=data)
+
+@app.route('/api/cars', methods=['POST'])
+def cars():
+
+    form = CarForm()
+
+    if request.method == 'POST':
+
+        if form.validate_on_submit():
+
+            make = form.make.data
+            model = form.model.data
+            colour = form.colour.data
+            year = form.year.data
+            price = form.price.data
+            car_type = dict(form.car_type.choices).get(form.car_type.data)
+            transmission = dict(form.transmission.choices).get(form.transmission.data)
+            description = form.description.data
+            photo = form.photo.data
+
+            filename = secure_filename(photo.filename)
+
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            flash('Car successfully added.', 'success')
+            
+            data = [
+                {
+                'description': description,
+                'year': year,
+                'make': make,
+                'model': model,
+                'colour': colour,
+                'transmission': transmission,
+                'type': car_type,
+                'price': price,
+                'photo': filename
+            }]
+
+            return jsonify(data=data)
+
+        else:
+            return jsonify(errors=form_errors(form))
 
 
 # Please create all new routes and view functions above this route.
