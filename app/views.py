@@ -6,13 +6,53 @@ This file creates your application.
 """
 
 from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import render_template, request, redirect, url_for, flash, jsonify, request
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users,Favourites,Cars
 from werkzeug.security import check_password_hash,generate_password_hash
 from .forms import RegisterForm, LoginForm, ExploreForm, CarForm
+from app.models import Users, Cars, Favourites
 import datetime
-import JSON
+from datetime import datetime
+
+# Using JWT
+import jwt
+from flask import _request_ctx_stack
+from functools import wraps
+
+# Create a JWT @requires_auth decorator
+# This decorator can be used to denote that a specific route should check
+# for a valid JWT token before displaying the contents of that route.
+def requires_auth(f):
+  @wraps(f)
+  def decorated(*args, **kwargs):
+    auth = request.headers.get('Authorization', None) # or request.cookies.get('token', None)
+
+    if not auth:
+      return jsonify({'code': 'authorization_header_missing', 'description': 'Authorization header is expected'}), 401
+
+    parts = auth.split()
+
+    if parts[0].lower() != 'bearer':
+      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must start with Bearer'}), 401
+    elif len(parts) == 1:
+      return jsonify({'code': 'invalid_header', 'description': 'Token not found'}), 401
+    elif len(parts) > 2:
+      return jsonify({'code': 'invalid_header', 'description': 'Authorization header must be Bearer + \s + token'}), 401
+
+    token = parts[1]
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'code': 'token_expired', 'description': 'token is expired'}), 401
+    except jwt.DecodeError:
+        return jsonify({'code': 'token_invalid_signature', 'description': 'Token signature is invalid'}), 401
+
+    g.current_user = user = payload
+    return f(*args, **kwargs)
+
+  return decorated
 
 ###
 # Routing for your application.
@@ -22,6 +62,7 @@ import JSON
 def register():
 
     form = RegisterForm()
+    errors = []
 
     if request.method == 'POST':
 
@@ -34,53 +75,89 @@ def register():
             location = form.location.data
             biography = form.biography.data
             photo = form.photo.data
+            filename = secure_filename(photo.filename)
             date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-            filename = secure_filename(photo.filename)
+            user1 = Users.query.filter_by(username=username).first()
+            user2 = Users.query.filter_by(email=email).first()
+            if user1 is None:
+                if user2 is None:
+                    
+                    photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
-            flash('User successfully registered.', 'success')
-            
-            data = [
-                {
-                'username': username,
-                'name': fullname,
-                'photo': filename,
-                'email': email,
-                'location': location,
-                'biography': biography,
-                'date_joined': date
-            }]
+                    newUser = Users(username=username, password=password, name=name, email=email,
+                                    location=location, biography=biography, photo=photo, date=date)
+                    
+                    db.session.add(newUser)
+                    db.session.commit()
 
-            return jsonify(data=data)
+                    flash('User successfully registered.', 'success')
+
+                    user = Users.query.filter_by(username=username).first()
+
+                    data = [
+                        {
+                        'id': user.id,
+                        'username': username,
+                        'name': fullname,
+                        'photo': filename,
+                        'email': email,
+                        'location': location,
+                        'biography': biography,
+                        'date_joined': date
+                    }]
+
+                    return jsonify(data=data)
+                else:
+                    errors.append("Email is already taken")
+            else:
+                errors.append('Username is already taken')
 
         else:
-            return jsonify(errors=form_errors(form))
+            return jsonify(errors=form_errors(form) + errors)
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
 
     form = LoginForm()
+    errors = []
 
     if request.method == 'POST':
 
         if form.validate_on_submit():
 
-            pass
+            username = form.username.data
+            password = form.password.data
+
+            user = Users.query.filter_by(username=username).first()
+
+            if user is not None and check_password_hash(user.password, password):
+                
+                payload = {
+                    'username': user.username,
+                    'iat': datetime.datetime.now(datetime.timezone.utc),
+                    'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=45)
+                }
+
+                token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+                return jsonify(data={'message': 'Login Successful', 'token': token})
+            else:
+                errors.append('Incorrect username or password')
 
         else:
-            return jsonify(errors=form_errors(form))
+            return jsonify(errors=form_errors(form) + errors)
 
-           return jsonify(errors=form_errors(form))
 
 @app.route('/api/auth/logout', methods=['POST'])
+@requires_auth
 def logout():
 
-    data = [{'message': 'Log out successful'}]
+    data = {'message': 'Log out successful'}
     return jsonify(data=data)
 
 @app.route('/api/cars', methods=['POST'])
+@requires_auth
 def cars():
 
     form = CarForm()
@@ -103,10 +180,18 @@ def cars():
 
             photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            flash('Car successfully added.', 'success')
+            newCar = Cars(description=description, make=make, model=model, colour=colour,
+                        year=year, transmission=transmission, car_type=car_type, price=price,
+                        photo=photo, user_id=current_user.get_id())
+
+            db.session.add(newCar)
+            db.session.commit()
             
+            flash('Car successfully added.', 'success')
+
             data = [
                 {
+                #'id': id,
                 'description': description,
                 'year': year,
                 'make': make,
@@ -115,13 +200,136 @@ def cars():
                 'transmission': transmission,
                 'type': car_type,
                 'price': price,
-                'photo': filename
+                'photo': filename,
+                'user_id': '#'
             }]
 
             return jsonify(data=data)
 
         else:
             return jsonify(errors=form_errors(form))
+
+@app.route('/api/cars', methods=["GET"])
+@requires_auth
+def get_all_cars():
+
+    cars = db.session.query(Cars).all()
+    data = []
+
+    if cars == []:
+        return jsonify({"message": "No cars available", 'errors': []})
+
+    for car in cars:
+        data.append({
+            'id': car.id,
+            'description': car.description,
+            'year': car.year,
+            'make': car.make,
+            'model': car.model,
+            'colour': car.colour,
+            'transmission': car.transmission,
+            'type': car.car_type,
+            'price': car.price,
+            'photo': car.filename,
+            'user_id': car.userid
+        })
+
+    return jsonify(data=data)
+
+@app.route("/api/cars/<car_id>", methods=["GET"])
+@requires_auth
+def get_car(car_id):
+
+    car = Cars.query.filter_by(id=car_id).first()
+
+    if car is None:
+        return jsonify({"message": "Car does not exist", 'errors': []})
+
+    data = [{
+            'id': car.id,
+            'description': car.description,
+            'year': car.year,
+            'make': car.make,
+            'model': car.model,
+            'colour': car.colour,
+            'transmission': car.transmission,
+            'type': car.car_type,
+            'price': car.price,
+            'photo': car.filename,
+            'user_id': car.userid
+    }]
+
+    return jsonify(data=data)
+
+@app.route("/api/cars/<car_id>/favourite", methods=["POST"])
+@requires_auth
+def favourite(car_id):
+
+    favourite = Favourites(car_id=car_id, user_id=current_user.get_id())
+
+    db.session.add(favourite)
+    db.session.commit()
+
+    data = [{
+        'message': 'Car Successfully Favourited',
+        'id': car.id
+    }]
+
+    return jsonify(data=data)
+
+@app.route("/api/users/<user_id>", methods=["GET"])
+@requires_auth
+def get_user(user_id):
+
+    user = Users.query.filter_by(id=user_id).first()
+
+    if user is None:
+        return jsonify({"message": "User does not exist", 'errors': []})
+
+    data = [
+        {
+        'id': user.id,
+        'username': user.username,
+        'name': user.fullname,
+        'photo': user.filename,
+        'email': user.email,
+        'location': user.location,
+        'biography': user.biography,
+        'date_joined': user.date
+    }]
+
+    return jsonify(data=data)
+
+@app.route("/api/users/<user_id>/favourites", methods=["GET"])
+@requires_auth
+def get_user_favourites(user_id):
+
+    favourites = Favourites.query.filter_by(user_id=user_id).all()
+    data = []
+
+    if favourites == []:
+        return jsonify({"message": "User has no favourites", 'errors': []})
+
+    for favourite in favourites:
+
+        car_id = favourite.car_id
+        car = Cars.query.filter_by(id=car_id).first()
+
+        data.append({
+            'id': car.id,
+            'description': car.description,
+            'year': car.year,
+            'make': car.make,
+            'model': car.model,
+            'colour': car.colour,
+            'transmission': car.transmission,
+            'type': car.car_type,
+            'price': car.price,
+            'photo': car.filename,
+            'user_id': car.userid
+        })
+
+    return jsonify(data=data)
 
 
 # Please create all new routes and view functions above this route.
