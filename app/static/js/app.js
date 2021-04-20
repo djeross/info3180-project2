@@ -84,13 +84,13 @@ const NotFound = {
 // Define Routes
 const routes = [
     { path: "/", component: Home },
-    { path: "/register", component: Register },
+    /*{ path: "/register", component: Register },
     { path: "/login", component: Login },
     { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
     { path: "/users/:id", component: User },
     { path: "/cars/new", component: AddCar },
-    { path: "/cars/:id", component: Car },
+    { path: "/cars/:id", component: Car },*/
 
     // This is a catch all route in case none of the above matches
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
