@@ -5,8 +5,12 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from app import app
-from flask import render_template, request
+from app import app, db, login_manager
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import login_user, logout_user, current_user, login_required
+from app.forms import RegisterForm,LoginForm,ExploreForm,CarForm
+from app.models import Users,Favourites,Cars
+from werkzeug.security import check_password_hash,generate_password_hash
 
 ###
 # Routing for your application.
@@ -28,6 +32,12 @@ def index(path):
     """
     return render_template('index.html')
 
+
+
+
+@login_manager.user_loader
+def load_user(id):
+    return UserProfile.query.get(int(id))
 
 # Here we define a function to collect form errors from Flask-WTF
 # which we can later use
