@@ -88,9 +88,9 @@ const routes = [
     { path: "/login", component: Login },
     { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
-    { path: "/users/{user_id}", component: User },
+    { path: "/users/:id", component: User },
     { path: "/cars/new", component: AddCar },
-    { path: "/cars/{card_id}", component: Car },
+    { path: "/cars/:id", component: Car },
 
     // This is a catch all route in case none of the above matches
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
