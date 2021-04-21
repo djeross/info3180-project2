@@ -47,6 +47,7 @@ app.component('app-footer', {
     }
 });
 
+
 const Home = {
     name: 'Home',
     template: `
@@ -82,8 +83,7 @@ const Register = {
     template: `
         <div>
             <h1>Register New User</h1>
-
-            <form method="POST" action="" id="registerForm" @submit.prevent="registerUser">
+            <form method="POST" action="" id="register-form" @submit.prevent="registerUser">
                 <div>
                     <div>
                         <label class="" for="username">Username</label><br>
@@ -116,19 +116,43 @@ const Register = {
                     <label class="" for="photo">Upload Photo</label><br>
                     <input type="file" class="" name="photo" accept="image/x-png,image/jpg">
                 </div>
-
                 <button type="submit" name="submit" class="btn btn-primary">Register</button>
             </form>
         </div>
     `,
-    data() {
-        return {}
+    data: function() {
+        return {
+            
+        };
     },
     methods: {
-        registerUser () {
+        registerUser: function() {
+            let self = this;
+            let registerForm = document.getElementById('register-form');
+            let form_data = new FormData(registerForm);
 
+            fetch("/api/register", {
+                method: 'POST',
+                body: form_data,
+                headers: {
+                    'X-CSRFToken': token
+                },
+                credentials: 'same-origin'        
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                console.log('success');
+                console.log(jsonResponse);
+
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    
         }
-    },
+    }
 };
 
 const Login = {
@@ -136,7 +160,6 @@ const Login = {
     template: `
         <div>
             <h1>Login to your account</h1>
-
             <form method="POST" action="" id="loginForm" @submit.prevent="loginUser">
                 <div>
                     <label class="" for="username">Username</label><br>
@@ -146,7 +169,6 @@ const Login = {
                     <label class="" for="biography">Password</label><br>
                     <input type="password" class="" name="password">
                 </div>
-
                 <button type="submit" name="submit" class="btn btn-primary">Login</button>
             </form>
         </div>
@@ -160,12 +182,6 @@ const Login = {
         }
     },
 };
-
-
-
-
-
-
 
 const NotFound = {
     name: 'NotFound',
