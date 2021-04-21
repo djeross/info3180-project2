@@ -52,6 +52,9 @@ app.component('app-header', {
     }, 
     methods: {
         isLoggedIn: function() {
+            if (localStorage.hasOwnProperty('token')) {
+                return true;
+            }
             return false;
         }
     }
@@ -222,7 +225,7 @@ const Login = {
                 console.log('success');
                 console.log(jsonResponse);
 
-                if(jsonResponse.hasOwnProperty("token")){
+                if(jsonResponse.hasOwnProperty("token")) {
 
                     let jwt_token = jsonResponse.token;
                     let id = jsonResponse.id;
@@ -241,6 +244,35 @@ const Login = {
             });
     
         }
+    }
+};
+
+const Logout = {
+    name: 'Logout',
+    template: `
+    `,
+    created: function(){
+        fetch("api/auth/logout", {
+            headers: {
+                'Authorization': `Bearer ${localStorage.token}`,
+                'X-CSRFToken': token
+            },
+            credentials: 'same-origin'
+        })
+        .then(function(response){
+          return response.json();
+        })
+        .then(function(jsonResponse){
+          console.log(jsonResponse);
+          localStorage.removeItem('token');
+          localStorage.removeItem('current_user');
+          console.info('Token and current user removed from localStorage.');
+          
+          router.push('/');
+        })
+        .catch(function(error){
+          console.log(error);
+        });
     }
 };
 
@@ -418,7 +450,7 @@ const routes = [
     { path: "/", component: Home },
     { path: "/register", component: Register },
     { path: "/login", component: Login },
-    //{ path: "/logout", component: Logout },
+    { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
     { path: "/users/:id", component: Profile },
     { path: "/cars/new", component: AddCar },
