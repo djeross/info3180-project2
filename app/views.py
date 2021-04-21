@@ -336,7 +336,7 @@ def get_user_favourites(user_id):
 
 @app.route('/test')
 def test():
-    return render_template("explore.html")
+    return render_template("fav.html")
 
 
 # Please create all new routes and view functions above this route.
