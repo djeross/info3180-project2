@@ -139,7 +139,7 @@ const Register = {
                 </div>
                 <div class="">
                     <label class="" for="photo">Upload Photo</label><br>
-                    <input type="file" class="form-control form-field" name="photo" accept="image/x-png,image/jpg">
+                    <input type="file" class="form-control form-field" name="photo" accept=".jpeg, .jpg, .png">
                 </div>
                 <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Register</button>
             </form>
