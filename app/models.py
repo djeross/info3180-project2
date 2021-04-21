@@ -1,4 +1,5 @@
 from . import db
+from werkzeug.security import generate_password_hash
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -13,7 +14,7 @@ class Users(db.Model):
 
     def __init__(self,username,password,name,email,location,biography,photo,date):
         self.username = username
-        self.password = password
+        self.password = generate_password_hash(password)
         self.name = name
         self.email = email
         self.location = location
