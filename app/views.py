@@ -6,7 +6,7 @@ This file creates your application.
 """
 
 from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash, jsonify, request
+from flask import render_template, request, redirect, url_for, flash, jsonify, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users,Favourites,Cars
 from werkzeug.security import check_password_hash,generate_password_hash
