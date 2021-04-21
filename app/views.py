@@ -5,11 +5,13 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
+import os
 from app import app, db, login_manager
 from flask import render_template, request, redirect, url_for, flash, jsonify, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users,Favourites,Cars
 from werkzeug.security import check_password_hash,generate_password_hash
+from werkzeug.utils import secure_filename
 from .forms import RegisterForm, LoginForm, ExploreForm, CarForm
 from app.models import Users, Cars, Favourites
 import datetime
@@ -141,7 +143,7 @@ def login():
 
                 token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
 
-                return jsonify(data={'message': 'Login Successful', 'token': token})
+                return jsonify(data={'message': 'Login Successful', 'token': token, 'id': user.id})
             else:
                 errors.append('Incorrect username or password')
 
