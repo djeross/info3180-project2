@@ -19,12 +19,18 @@ app.component('app-header', {
     
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <router-link class="nav-link" to="/">Register <span class="sr-only">(current)</span></router-link>
-          </li>
-          <li class="nav-item active">
-            <router-link class="nav-link" to="/">Login <span class="sr-only">(current)</span></router-link>
-          </li>
+            <div class="logged-in-links">
+                <li class="nav-item active">
+                    <router-link class="nav-link" to="/Explore">Explore <span class="sr-only">(current)</span></router-link>
+                </li>
+            </div>
+            <li class="nav-item active">
+                <router-link class="nav-link" to="/">Register <span class="sr-only">(current)</span></router-link>
+            </li>
+            <li class="nav-item active">
+                <router-link class="nav-link" to="/">Login <span class="sr-only">(current)</span></router-link>
+            </li>
+
         </ul>
       </div>
     </nav>
@@ -69,6 +75,64 @@ const Home = {
     }
 };
 
+const Explore = {
+    name: 'Explore',
+    template: `
+        <div class="container" id="favcontainer">
+            <div id="displayexplore">
+                <h1>Explore</h1>
+                <div id="explore-search">
+                    <form id="explore-form" method="post">
+                        <div class="form-group col-4">
+                            <label for="make">Make</label>
+                            <input type="text" class="form-control" name="make" />
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="model">Model</label>
+                            <input type="text" class="form-control" name="model" />
+                        </div>
+                        <div class="form-group search-btn-div">
+                            <button type="submit" class="btn btn-success search-btn">Search</button>
+                            </div>
+                    </form>
+                </div>  
+
+                <div class="carslist">
+                <div v-for="cars in listOfCars.slice(0, 3)">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top favcar"  :src="cars.photo">
+                        <div class="card-body">
+                            <div class="name-model-price">
+
+                                <div class="name-model">
+                                    <span  class="car-name">{{cars.make}}</span>
+                                    <span class="graytext">{{cars.model}}</span>
+                                </div>
+
+                                <a href="#" class="btn btn-success card-price-btn">
+                                    <img class="icons" src='/static/images/tagicon.png'>
+                                    <span><span>$</span>{{cars.price}}</span>
+                                </a>
+
+                            </div>
+                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    `,
+    data() {
+        return {
+            listOfCars : [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000"},
+{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000"},
+{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000"}]
+        }
+    }
+};
+
+
 
 
 
@@ -92,9 +156,9 @@ const routes = [
     { path: "/", component: Home },
     /*{ path: "/register", component: Register },
     { path: "/login", component: Login },
-    { path: "/logout", component: Logout },
+    { path: "/logout", component: Logout },*/
     { path: "/explore", component: Explore },
-    { path: "/users/:id", component: User },
+    /*{ path: "/users/:id", component: User },
     { path: "/cars/new", component: AddCar },
     { path: "/cars/:id", component: Car },*/
 
