@@ -45,8 +45,8 @@ class CarForm(FlaskForm):
             (10, 'Crossover'),
             (11, 'Luxury Car'),
             (12, 'Hybrid/Electric'),
-            (13, 'Super car'),
-            (12, 'Hyper Car')
+            (13, 'Super Car'),
+            (14, 'Hyper Car')
         ], 
         validators=[DataRequired()], 
         coerce=int

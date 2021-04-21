@@ -95,3 +95,44 @@ padding: 10px; border-radius: 50%; background-color:white; }
 
 #card-d-heart{display:flex; justify-content: flex-end;width: 100%}
 
+.login {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%); 
+
+}
+
+.register {
+  width: 570px;
+}
+
+.flex-area1 {
+  gap: 20px;
+}
+
+.form-field {
+  width: 250px;
+}
+
+.form {
+  background-color: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+#login-form {
+  width: 350px;
+  padding: 20px;
+}
+
+.login-field {
+  width: 100%;
+}
+
+#car-form {
+  width: 570px;
+}
