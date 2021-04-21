@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id="app">
+    <app-header></app-header>
+
+    <main>
+        <div class="container" id="favcontainer">
+            <div id="displayfav">
+
+                <div id="profile">
+                    <div id="profileimagediv">
+                        <div id="round"></div>
+                    </div>
+                    <div id="profiledetailsdiv" class="descriptions">
+                        <h2>Profile Name</h2>
+                        <h4 class="graytext">@<span>Username</span></h4>
+                        <p class="graytext">“The course is really stupid and I don’t see the point of it,” said everyone whom I have spoken to about Critical Reading and Writing in Science and Technology and Medical Sciences. There is a consensus that the course serves no purpose and is in no way beneficial to students.</p>
+                        <div id="elj">
+                            <div>
+                                <p class="profile-user-info graytext">Email</p>
+                                <p class="profile-user-info graytext">Location</p>
+                                <p class="profile-user-info graytext">Joined</p>
+                            </div>
+                            <div>
+                                <p class="profile-user-info">fullname@gmail.com</p>
+                                <p class="profile-user-info">Jamaica</p>
+                                <p class="profile-user-info">April 1,2021</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carsfavtext"><h1>Cars Favourited</h1></div>
+
+                <div id="favouritecarslist">
+
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top favcar" src='/static/images/car1.jpg' alt="Card image cap">
+                        <div class="card-body">
+                            <div class="name-model-price">
+
+                                <div class="name-model">
+                                    <span  class="car-name">Car Name </span>
+                                    <span class="graytext">Model</span>
+                                </div>
+
+                                <a href="#" class="btn btn-success card-price-btn">
+                                    <img class="icons"src='/static/images/tagicon.png'>
+                                    <span>$10,000,000</span>
+                                </a>
+
+                            </div>
+                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                        </div>
+                    </div>
+
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top favcar" src='/static/images/car2.jpg' alt="Card image cap">
+                        <div class="card-body">
+                            <div class="name-model-price">
+
+                                <div class="name-model">
+                                    <span  class="car-name">Car Name </span>
+                                    <span class="graytext">Model</span>
+                                </div>
+
+                                <a href="#" class="btn btn-success card-price-btn">
+                                    <img class="icons"src='/static/images/tagicon.png'>
+                                    <span>$10,000,000</span>
+                                </a>
+
+                            </div>
+                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                        </div>
+                    </div>
+
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top favcar" src='/static/images/car3.jpg' alt="Card image cap">
+                        <div class="card-body">
+                            <div class="name-model-price">
+
+                                <div class="name-model">
+                                    <span  class="car-name">Car Name </span>
+                                    <span class="graytext">Model</span>
+                                </div>
+
+                                <a href="#" class="btn btn-success card-price-btn">
+                                    <img class="icons"src='/static/images/tagicon.png'>
+                                    <span>$10,000,000</span>
+                                </a>
+
+                            </div>
+                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+{% endblock %}

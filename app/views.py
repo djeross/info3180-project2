@@ -148,7 +148,6 @@ def login():
         else:
             return jsonify(errors=form_errors(form) + errors)
 
-
 @app.route('/api/auth/logout', methods=['POST'])
 @requires_auth
 def logout():
@@ -330,6 +329,12 @@ def get_user_favourites(user_id):
         })
 
     return jsonify(data=data)
+
+
+
+@app.route('/test')
+def test():
+    return render_template("explore.html")
 
 
 # Please create all new routes and view functions above this route.
