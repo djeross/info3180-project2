@@ -143,7 +143,7 @@ def login():
 
                 token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
 
-                return jsonify(data={'message': 'Login Successful', 'token': token})
+                return jsonify(data={'message': 'Login Successful', 'token': token, 'id': user.id})
             else:
                 errors.append('Incorrect username or password')
 

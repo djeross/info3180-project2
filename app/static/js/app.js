@@ -107,7 +107,7 @@ const Register = {
     name: 'Register',
     template: `
         <div class="center-form register m-4 justify-content-center align-items-center">
-            <h1>Register New User</h1>
+            <h1 class="mb-4">Register New User</h1>
             <form method="POST" class="form" action="" id="register-form" @submit.prevent="registerUser()">
                 <div class="d-flex flex-area1 mt-sm-1 mb-sm-1">
                     <div>
@@ -171,7 +171,6 @@ const Register = {
             .then(function(jsonResponse) {
                 console.log('success');
                 console.log(jsonResponse);
-
             })
             .catch(function(error) {
                 console.log(error);
@@ -222,6 +221,19 @@ const Login = {
             .then(function(jsonResponse) {
                 console.log('success');
                 console.log(jsonResponse);
+
+                if(jsonResponse.hasOwnProperty("token")){
+
+                    let jwt_token = jsonResponse.token;
+                    let id = jsonResponse.id;
+
+                    // stores token to localStorage
+                    localStorage.setItem('token', jwt_token);
+                    localStorage.setItem('current_user', id);
+                    
+                    router.push('/explore');
+
+                }
 
             })
             .catch(function(error) {
@@ -287,7 +299,7 @@ const AddCar = {
     name: 'AddCar',
     template: `
     <div class="m-4">
-        <h1>Add New Car</h1>
+        <h1 class="mb-4">Add New Car</h1>
         <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar">
             <div class="mt-sm-1 mb-sm-1 d-flex flex-area1">
                 <div>
@@ -358,8 +370,33 @@ const AddCar = {
     }, 
     methods: {
         getCar: function() {
-            
-        },
+
+            let self = this;
+            let carForm = document.getElementById('car-form');
+            let form_data = new FormData(carForm);
+
+            fetch("/api/cars/new", {
+                method: 'POST',
+                body: form_data,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.token}`,
+                    'X-CSRFToken': token
+                },
+                credentials: 'same-origin'        
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                console.log('success');
+                console.log(jsonResponse);
+                router.push('/explore');
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    
+        }
         
     }
 };
