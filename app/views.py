@@ -12,7 +12,6 @@ from app.models import Users,Favourites,Cars
 from werkzeug.security import check_password_hash,generate_password_hash
 from .forms import RegisterForm, LoginForm, ExploreForm, CarForm
 import datetime
-import JSON
 
 ###
 # Routing for your application.
@@ -72,8 +71,6 @@ def login():
         else:
             return jsonify(errors=form_errors(form))
 
-           return jsonify(errors=form_errors(form))
-
 @app.route('/api/auth/logout', methods=['POST'])
 def logout():
 
@@ -122,6 +119,12 @@ def cars():
 
         else:
             return jsonify(errors=form_errors(form))
+
+
+
+@app.route('/test')
+def test():
+    return render_template("explore.html")
 
 
 # Please create all new routes and view functions above this route.

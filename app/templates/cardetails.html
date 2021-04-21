@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div id="app">
+    <app-header></app-header>
+
+    <main>
+        <div class="container">
+            <div id="display-car-details">
+                <div id="car-details-card">
+                    
+                        <img id="car-d-image" class="car-detail-image" src='/static/images/car1.jpg' alt="car image in card">
+                    
+                    <div id="car-details">
+                        <h1 id="car-d-heading"> My Car Name</h1>
+                        <h4 class="graytext">Car Model</h4>
+                        <p class="car-d-description graytext">The modern automobile is a complex technical system employing subsystems with specific design functions. Some of these consist of thousands of component parts that have evolved from breakthroughs in existing technology or from new technologies such as electronic computers, high-strength plastics, and new alloys of steel and nonferrous metals.</p>
+                        <div id="cpbd">
+                            <div id="cp">
+                                <div>
+                                    <p class="car-d-spec graytext">Color</p>
+                                    <p class="car-d-spec graytext">Price</p>
+                                </div>
+                                <div>
+                                    <p class="car-d-spec">Black</p>
+                                    <p class="car-d-spec">$1,000,000</p>
+                                </div>
+                            </div>
+                            <div id="bd">
+                                <div>
+                                    <p class="car-d-spec graytext">Body Type</p>
+                                    <p class="car-d-spec graytext">Transmission</p>
+                                </div>
+                                <div>
+                                    <p class="car-d-spec">Sedan</p>
+                                    <p class="car-d-spec">Manual</p>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <div id="card-d-btns" >
+                            <a href="#" class="btn btn-success email-owner">Email Owner</a>
+                            <div id="card-d-heart" >
+                                <button href="#" class="heart fa fa-heart-o"></button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+{% endblock %}
+{% block js %}
+<script>
+$(".heart.fa").click(function() {
+  $(this).toggleClass("fa-heart fa-heart-o");
+});
+</script>
+{% endblock%}
