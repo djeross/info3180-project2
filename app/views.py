@@ -6,16 +6,15 @@ This file creates your application.
 """
 
 import os
-from app import app, db, login_manager
+from app import app, db, login_manager, csrf
 from flask import render_template, request, redirect, url_for, flash, jsonify, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users,Favourites,Cars
-from werkzeug.security import check_password_hash,generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from .forms import RegisterForm, LoginForm, ExploreForm, CarForm
 from app.models import Users, Cars, Favourites
 import datetime
-from datetime import datetime
 
 # Using JWT
 import jwt
@@ -78,7 +77,7 @@ def register():
             biography = form.biography.data
             photo = form.photo.data
             filename = secure_filename(photo.filename)
-            date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             user1 = Users.query.filter_by(username=username).first()
             user2 = Users.query.filter_by(email=email).first()
@@ -181,7 +180,7 @@ def cars():
 
             newCar = Cars(description=description, make=make, model=model, colour=colour,
                         year=year, transmission=transmission, car_type=car_type, price=price,
-                        photo=photo, user_id=current_user.get_id())
+                        photo=filename, user_id=current_user.get_id())
 
             db.session.add(newCar)
             db.session.commit()
