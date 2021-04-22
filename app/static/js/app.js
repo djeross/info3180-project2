@@ -40,7 +40,7 @@ app.component('app-header', {
             <router-link class="nav-link" to="/login">Login <span class="sr-only">(current)</span></router-link>
           </li>
           <li class="nav-item active" v-if="isLoggedIn()">
-            <router-link class="nav-link" to="/">Logout <span class="sr-only">(current)</span></router-link>
+            <router-link class="nav-link" to="/logout">Logout <span class="sr-only">(current)</span></router-link>
           </li>
         </ul>
 
@@ -250,9 +250,11 @@ const Login = {
 const Logout = {
     name: 'Logout',
     template: `
+    <h1 class="mt-sm-3">Logging out...</h1>
     `,
-    mounted() {
+    created: function() {
         fetch("api/auth/logout", {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': token,

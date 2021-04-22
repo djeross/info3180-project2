@@ -152,9 +152,7 @@ def login():
 @app.route('/api/auth/logout', methods=['POST'])
 @requires_auth
 def logout():
-
-    data = {'message': 'Log out successful'}
-    return jsonify(data=data)
+    return jsonify(data={'message': 'Log out successful'})
 
 @app.route('/api/cars', methods=['POST'])
 @requires_auth
