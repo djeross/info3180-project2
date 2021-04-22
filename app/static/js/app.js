@@ -224,7 +224,7 @@ const Login = {
                 console.log('success');
                 console.log(jsonResponse);
 
-                if(jsonResponse.hasOwnProperty("token")) {
+                if(jsonResponse.token !== null) {
                     console.log('inside')
                     let jwt_token = jsonResponse.token;
                     let id = jsonResponse.id;
