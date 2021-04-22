@@ -174,6 +174,7 @@ const Register = {
             .then(function(jsonResponse) {
                 console.log('success');
                 console.log(jsonResponse);
+                router.push('/login');
             })
             .catch(function(error) {
                 console.log(error);
