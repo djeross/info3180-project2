@@ -227,8 +227,8 @@ const Login = {
 
                 if(jsonResponse.token !== null) {
                     console.log('inside')
-                    let jwt_token = jsonResponse.token;
-                    let id = jsonResponse.id;
+                    let jwt_token = jsonResponse.data.token;
+                    let id = jsonResponse.data.id;
 
                     // stores token to localStorage
                     localStorage.setItem('token', jwt_token);
@@ -251,7 +251,7 @@ const Logout = {
     name: 'Logout',
     template: `
     `,
-    created: function(){
+    mounted() {
         fetch("api/auth/logout", {
             headers: {
                 'Content-Type': 'application/json',
@@ -265,6 +265,7 @@ const Logout = {
         })
         .then(function(jsonResponse){
           console.log(jsonResponse);
+          console.log('logged out');
           localStorage.removeItem('token');
           localStorage.removeItem('current_user');
           console.info('Token and current user removed from localStorage.');
