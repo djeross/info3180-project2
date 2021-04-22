@@ -159,7 +159,6 @@ const Register = {
             let self = this;
             let registerForm = document.getElementById('register-form');
             let form_data = new FormData(registerForm);
-
             fetch("/api/register", {
                 method: 'POST',
                 body: form_data,

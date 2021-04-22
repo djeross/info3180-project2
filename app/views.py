@@ -87,8 +87,8 @@ def register():
                     
                     photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-                    newUser = Users(username=username, password=password, name=name, email=email,
-                                    location=location, biography=biography, photo=photo, date=date)
+                    newUser = Users(username=username, password=password, name=fullname, email=email,
+                                    location=location, biography=biography, photo=filename, date=date)
                     
                     db.session.add(newUser)
                     db.session.commit()
@@ -114,9 +114,7 @@ def register():
                     errors.append("Email is already taken")
             else:
                 errors.append('Username is already taken')
-
-        else:
-            return jsonify(errors=form_errors(form) + errors)
+        return jsonify(errors=form_errors(form) + errors)
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
