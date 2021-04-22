@@ -52,7 +52,7 @@ app.component('app-header', {
     }, 
     methods: {
         isLoggedIn: function() {
-            if (localStorage.hasOwnProperty('token')) {
+            if (localStorage.hasOwnProperty('token') === true) {
                 return true;
             }
             return false;
