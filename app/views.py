@@ -66,7 +66,7 @@ def register():
     errors = []
 
     if request.method == 'POST':
-
+        print("post")
         if form.validate_on_submit():
 
             username = form.username.data

@@ -109,7 +109,8 @@ const Home = {
 const Register = {
     name: 'Register',
     template: `
-        <div class="center-form register m-4 justify-content-center align-items-center">
+        <div class="maincontainer">
+        <div class="register m-4">
             <h1 class="mb-4">Register New User</h1>
             <form method="POST" class="form" action="" id="register-form" @submit.prevent="registerUser()">
                 <div class="d-flex flex-area1 mt-sm-1 mb-sm-1">
@@ -146,6 +147,7 @@ const Register = {
                 </div>
                 <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Register</button>
             </form>
+        </div>
         </div>
     `,
     data: function() {
@@ -277,7 +279,7 @@ const Logout = {
 const Explore = {
     name: 'Explore',
     template: `
-        <div class="container" id="favcontainer">
+        <div class="container maincontainer">
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
@@ -304,7 +306,7 @@ const Explore = {
                             <div class="name-model-price">
 
                                 <div class="name-model">
-                                    <span  class="car-name">{{cars.make}}</span>
+                                    <span  class="car-name">{{cars.year.concat(" ",cars.make)}}</span>
                                     <span class="graytext">{{cars.model}}</span>
                                 </div>
 
@@ -324,9 +326,9 @@ const Explore = {
     `,
     data() {
         return {
-            listOfCars : [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000"},
-{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000"},
-{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000"}]
+            listOfCars : [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000",'year':"2019"},
+{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000",'year':"2021"},
+{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000",'year':"2018"}]
         }
     }
 };
@@ -336,10 +338,69 @@ const Explore = {
 const Profile = {
     name: 'Profile',
     template: `
-        
+        <div class="container maincontainer">
+            <div id="displayfav">
+
+                <div id="profile">
+                    <div id="profileimagediv">
+                        <img class="favcar" id="round" :src="userInfo[0].photo">
+                    </div>
+                    <div id="profiledetailsdiv" class="descriptions">
+                        <h2 id="profile-name">{{userInfo[0].name}}</h2>
+                        <h4 class="graytext">@<span>{{userInfo[0].username}}</span></h4>
+                        <p class="graytext">{{userInfo[0].biography}}</p>
+                        <div id="elj">
+                            <div>
+                                <p class="profile-user-info graytext">Email</p>
+                                <p class="profile-user-info graytext">Location</p>
+                                <p class="profile-user-info graytext">Joined</p>
+                            </div>
+                            <div>
+                                <p class="profile-user-info">{{userInfo[0].email}}</p>
+                                <p class="profile-user-info">{{userInfo[0].location}}</p>
+                                <p class="profile-user-info">{{userInfo[0].date_joined}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carsfavtext"><h1>Cars Favourited</h1></div>
+
+                <div class="carslist">
+                <div v-for="cars in listOfCars.slice(0, 3)">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top favcar"  :src="cars.photo">
+                        <div class="card-body">
+                            <div class="name-model-price">
+
+                                <div class="name-model">
+                                    <span  class="car-name">{{cars.year.concat(" ",cars.make)}}</span>
+                                    <span class="graytext">{{cars.model}}</span>
+                                </div>
+
+                                <a href="#" class="btn btn-success card-price-btn">
+                                    <img class="icons" src='/static/images/tagicon.png'>
+                                    <span><span>$</span>{{cars.price}}</span>
+                                </a>
+
+                            </div>
+                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>  
     `,
     data() {
-        return {}
+        return {
+            listOfCars: [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000",'year':"2016"},
+{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000",'year':"2020"},
+{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000",'year':"2020"}],
+            userInfo: [{'photo':"http://localhost:8080/static/images/car3.jpg",'username':"Mary",'name':"Mary Jane",'email':"maryjane@yahoo.com",'location':"London,England",
+'biography':"A personal biography is a concise introduction that provides a summarized version of your professional accomplishments, your credentials and education, and other information that makes you who you are. Personal bios are often used when seeking employment to provide hiring managers with a synopsis of why you are the ideal candidate for the job. They can also be used on networking platforms and professional websites.",'date_joined':"April 1,2020"
+}]
+        }
     }, 
     methods: {
         getUser: function() {
@@ -349,6 +410,75 @@ const Profile = {
         getTopFavs: function() {
             
         },
+    }
+};
+
+const CarDetails = {
+    name: 'CarDetails',
+    template: `
+        <div class="container maincontainer">
+            <div id="display-car-details">
+                <div id="car-details-card">
+                    <img id="car-d-image" class="car-detail-image" src='/static/images/car1.jpg' alt="car image in card">
+                    
+                    <div id="car-details">
+                        <h1 id="car-d-heading"> {{details[0].year.concat(" ",details[0].make)}}</h1>
+                        <h4 class="graytext">{{details[0].model}}</h4>
+                        <p class="car-d-description graytext">{{details[0].description}}</p>
+                        <div id="cpbd">
+                            <div id="cp">
+                                <div>
+                                    <p class="car-d-spec graytext">Color</p>
+                                    <p class="car-d-spec graytext">Price</p>
+                                </div>
+                                <div>
+                                    <p class="car-d-spec">{{details[0].colour}}</p>
+                                    <p class="car-d-spec">{{details[0].price}}</p>
+                                </div>
+                            </div>
+                            <div id="bd">
+                                <div>
+                                    <p class="car-d-spec graytext">Body Type</p>
+                                    <p class="car-d-spec graytext">Transmission</p>
+                                </div>
+                                <div>
+                                    <p class="car-d-spec">{{details[0].car_type}}</p>
+                                    <p class="car-d-spec">{{details[0].transmission}}</p>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <div id="card-d-btns" >
+                            <a href="#" class="btn btn-success email-owner">Email Owner</a>
+                            <div id="card-d-heart" >
+                                <button href="#" @click="addFavourite" id="heartbtn" class="heart fa fa-heart-o"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    `,
+    data() {
+        return {
+            details: [{"id": 207,
+    "description": "The best electic car anyone can buy. With the longest range and quickest acceleration of any electric vehicle in production, Model S Plaid is the highest performing sedan ever built",
+    "year": "2018","make": "Tesla","model": "Model S Plaid","colour": "Red","transmission": "Automatic",
+    "car_type": "Sedan","price": ".420420420","photo": "http://localhost/images/tesla.jpg","user_id": 2
+            }]
+        }
+    }, 
+    methods: {
+        addFavourite: function(event) {
+            event.target.classList.toggle("fa-heart-o");
+            event.target.classList.toggle("fa-heart");
+            if(event.target.classList.contains("fa-heart")===true){
+                alert("added to Fav list");
+            }
+            else{
+                alert("remove from Fav list");
+            }
+        }
     }
 };
 
@@ -479,7 +609,7 @@ const routes = [
     { path: "/explore", component: Explore },
     { path: "/users/:id", component: Profile },
     { path: "/cars/new", component: AddCar },
-    /*{ path: "/cars/:id", component: Car },*/
+    { path: "/cars/:id", component: CarDetails},
 
     // This is a catch all route in case none of the above matches
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
