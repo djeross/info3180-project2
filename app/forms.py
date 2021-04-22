@@ -31,27 +31,8 @@ class CarForm(FlaskForm):
     colour = StringField('Colour', validators=[DataRequired()])
     year = StringField('Year', validators=[DataRequired()])
     price = StringField('Price', validators=[DataRequired()])
-    car_type = SelectField('Car Type', 
-        choices=[
-            (1, 'SUV'), 
-            (2, 'Truck'), 
-            (3, 'Sedan'), 
-            (4, 'Van'),
-            (5, 'Coupe'),
-            (6, 'Wagon'),
-            (7, 'Convertible'),
-            (8, 'Sports Car'),
-            (9, 'Diesel'),
-            (10, 'Crossover'),
-            (11, 'Luxury Car'),
-            (12, 'Hybrid/Electric'),
-            (13, 'Super Car'),
-            (14, 'Hyper Car')
-        ], 
-        validators=[DataRequired()], 
-        coerce=int
-    )
-    transmission = SelectField('Transmission', choices=[(1, 'Automatic'), (2, 'Manual')], validators=[DataRequired()], coerce=int)
+    car_type = StringField('Car Type', validators=[DataRequired()])
+    transmission = StringField('Transmission', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     photo = FileField('Photo', validators=[
         FileRequired(),
