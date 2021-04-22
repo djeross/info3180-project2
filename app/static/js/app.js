@@ -178,7 +178,6 @@ const Register = {
             .catch(function(error) {
                 console.log(error);
             });
-    
         }
     }
 };
@@ -226,7 +225,7 @@ const Login = {
                 console.log(jsonResponse);
 
                 if(jsonResponse.hasOwnProperty("token")) {
-
+                    console.log('inside')
                     let jwt_token = jsonResponse.token;
                     let id = jsonResponse.id;
 
