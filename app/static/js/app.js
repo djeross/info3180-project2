@@ -384,7 +384,7 @@ const AddCar = {
                 </div>
                 <div>
                     <label class="" for="year">Year</label><br>
-                    <input type="number" class="form-control form-field" name="year">
+                    <input type="text" class="form-control form-field" name="year">
                 </div>
             </div>
             <div class="mt-sm-3 mb-sm-1 d-flex flex-area1">
