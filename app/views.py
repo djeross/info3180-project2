@@ -55,16 +55,6 @@ def requires_auth(f):
 
   return decorated
 
-def getUserID():
-    auth = request.headers.get('Authorization', None)
-    token = auth.split()[1]
-    print(token)
-    try:
-        payload = jwt.decode(token, app.config['SECRET_KEY'], verify=False)
-        return payload["id"]
-    except:
-        return -1
-
 ###
 # Routing for your application.
 ###
@@ -239,7 +229,7 @@ def get_all_cars():
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.filename,
+            'photo': car.photo,
             'user_id': car.userid
         })
 
@@ -264,7 +254,7 @@ def get_car(car_id):
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.filename,
+            'photo': car.photo,
             'user_id': car.userid
     }]
 
@@ -334,7 +324,7 @@ def get_user_favourites(user_id):
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.filename,
+            'photo': car.photo,
             'user_id': car.userid
         })
 
