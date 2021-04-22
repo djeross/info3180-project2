@@ -133,6 +133,7 @@ def login():
             if user is not None and check_password_hash(user.password, password):
                 
                 payload = {
+                    'id': user.id,
                     'username': user.username,
                     'iat': datetime.datetime.now(datetime.timezone.utc),
                     'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=45)
@@ -150,9 +151,7 @@ def login():
 @app.route('/api/auth/logout', methods=['POST'])
 @requires_auth
 def logout():
-
-    data = {'message': 'Log out successful'}
-    return jsonify(data=data)
+    return jsonify(data={'message': 'Log out successful'})
 
 @app.route('/api/cars', methods=['POST'])
 @requires_auth
@@ -168,9 +167,9 @@ def cars():
             model = form.model.data
             colour = form.colour.data
             year = form.year.data
-            price = form.price.data
-            car_type = dict(form.car_type.choices).get(form.car_type.data)
-            transmission = dict(form.transmission.choices).get(form.transmission.data)
+            price = format(float(form.price.data), '.2f')
+            car_type = form.car_type.data
+            transmission = form.transmission.data
             description = form.description.data
             photo = form.photo.data
 
@@ -180,7 +179,7 @@ def cars():
 
             newCar = Cars(description=description, make=make, model=model, colour=colour,
                         year=year, transmission=transmission, car_type=car_type, price=price,
-                        photo=filename, user_id=current_user.get_id())
+                        photo=filename, userid=g.current_user["id"])
 
             db.session.add(newCar)
             db.session.commit()
@@ -228,7 +227,7 @@ def get_all_cars():
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.filename,
+            'photo': car.photo,
             'user_id': car.userid
         })
 
@@ -253,7 +252,7 @@ def get_car(car_id):
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.filename,
+            'photo': car.photo,
             'user_id': car.userid
     }]
 
@@ -263,7 +262,7 @@ def get_car(car_id):
 @requires_auth
 def favourite(car_id):
 
-    favourite = Favourites(car_id=car_id, user_id=current_user.get_id())
+    favourite = Favourites(car_id=car_id, user_id=g.current_user["id"])
 
     db.session.add(favourite)
     db.session.commit()
@@ -323,7 +322,7 @@ def get_user_favourites(user_id):
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.filename,
+            'photo': car.photo,
             'user_id': car.userid
         })
 

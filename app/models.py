@@ -48,18 +48,19 @@ class Cars(db.Model):
     make = db.Column(db.String(100))
     model = db.Column(db.String(100))
     colour = db.Column(db.String(50))
-    model = db.Column(db.String(4))
+    year = db.Column(db.String(10)) #changed because I got an error saying 'value too long for type character varying(4)'
     transmission = db.Column(db.String(100))
     car_type = db.Column(db.String(100))
     price = db.Column(db.Float)
     photo = db.Column(db.String(100))
     userid= db.Column(db.Integer)
 
-    def __init__(self,description,make,model,colour,transmission,car_type,price,photo,userid):
+    def __init__(self,description,make,model,colour,year,transmission,car_type,price,photo,userid):
         self.description = description
         self.make = make
         self.model = model
         self.colour = colour
+        self.year = year
         self.transmission = transmission
         self.car_type = car_type
         self.price = price

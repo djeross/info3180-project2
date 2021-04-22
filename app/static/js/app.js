@@ -11,7 +11,7 @@ const app = Vue.createApp({
 app.component('app-header', {
     name: 'AppHeader',
     template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" :key="$route.fullPath">
     <router-link class="nav-link text-white" to="/" v-if="!isLoggedIn()"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</router-link>
     <router-link class="nav-link text-white" to="/explore" v-if="isLoggedIn()"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</router-link>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@ app.component('app-header', {
             <router-link class="nav-link" to="/login">Login <span class="sr-only">(current)</span></router-link>
           </li>
           <li class="nav-item active" v-if="isLoggedIn()">
-            <router-link class="nav-link" to="/">Logout <span class="sr-only">(current)</span></router-link>
+            <router-link class="nav-link" to="/logout">Logout <span class="sr-only">(current)</span></router-link>
           </li>
         </ul>
 
@@ -52,7 +52,7 @@ app.component('app-header', {
     }, 
     methods: {
         isLoggedIn: function() {
-            if (localStorage.hasOwnProperty('token')) {
+            if (localStorage.hasOwnProperty('token') === true) {
                 return true;
             }
             return false;
@@ -116,30 +116,30 @@ const Register = {
                 <div class="d-flex flex-area1 mt-sm-1 mb-sm-1">
                     <div>
                         <label class="" for="username">Username</label><br>
-                        <input type="text" class="form-control form-field" name="username">
+                        <input type="text" class="form-control form-field" name="username" required>
                     </div>
                     <div>
                         <label class="" for="password">Password</label><br>
-                        <input type="password" class="form-control form-field" name="password">
+                        <input type="password" class="form-control form-field" name="password" required>
                     </div>
                 </div>
                 <div class="d-flex flex-area1 mt-sm-3 mb-sm-1">
                     <div>
                         <label class="" for="fullname">Fullname</label><br>
-                        <input type="text" class="form-control form-field" name="fullname">
+                        <input type="text" class="form-control form-field" name="fullname" required>
                     </div>
                     <div>
                         <label class="" for="email">Email</label><br>
-                        <input type="email" class="form-control form-field" name="email">
+                        <input type="email" class="form-control form-field" name="email" required>
                     </div>
                 </div>
                 <div class="mt-sm-3 mb-sm-1">
                     <label class="" for="location">Location</label><br>
-                    <input type="text" class="form-control form-field" name="location">
+                    <input type="text" class="form-control form-field" name="location" required>
                 </div>
                 <div class="mt-sm-3">
                     <label class="" for="biography">Biography</label><br>
-                    <textarea name="biography" class="form-control"></textarea><br>
+                    <textarea name="biography" class="form-control" required></textarea><br>
                 </div>
                 <div class="">
                     <label class="" for="photo">Upload Photo</label><br>
@@ -175,6 +175,7 @@ const Register = {
             .then(function(jsonResponse) {
                 console.log('success');
                 console.log(jsonResponse);
+                router.push('/login');
             })
             .catch(function(error) {
                 console.log(error);
@@ -191,11 +192,11 @@ const Login = {
             <form method="POST" class="form" action="" id="login-form" @submit.prevent="loginUser()">
                 <div class="mt-sm-1 mb-sm-1">
                     <label class="" for="username">Username</label><br>
-                    <input type="text" class="form-control form-field login-field" name="username">
+                    <input type="text" class="form-control form-field login-field" name="username" required>
                 </div>
                 <div class="mt-sm-3 mb-sm-1">
                     <label class="" for="biography">Password</label><br>
-                    <input type="password" class="form-control form-field login-field" name="password">
+                    <input type="password" class="form-control form-field login-field" name="password" required>
                 </div>
                 <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1 login-field">Login</button>
             </form>
@@ -225,10 +226,10 @@ const Login = {
                 console.log('success');
                 console.log(jsonResponse);
 
-                if(jsonResponse.hasOwnProperty("token")) {
+                if(jsonResponse.token !== null) {
                     console.log('inside')
-                    let jwt_token = jsonResponse.token;
-                    let id = jsonResponse.id;
+                    let jwt_token = jsonResponse.data.token;
+                    let id = jsonResponse.data.id;
 
                     // stores token to localStorage
                     localStorage.setItem('token', jwt_token);
@@ -250,12 +251,15 @@ const Login = {
 const Logout = {
     name: 'Logout',
     template: `
+    <h1 class="mt-sm-3">Logging out...</h1>
     `,
-    created: function(){
+    created: function() {
         fetch("api/auth/logout", {
+            method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.token}`,
-                'X-CSRFToken': token
+                'Content-Type': 'application/json',
+                'X-CSRFToken': token,
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             credentials: 'same-origin'
         })
@@ -264,6 +268,7 @@ const Logout = {
         })
         .then(function(jsonResponse){
           console.log(jsonResponse);
+          console.log('logged out');
           localStorage.removeItem('token');
           localStorage.removeItem('current_user');
           console.info('Token and current user removed from localStorage.');
@@ -330,6 +335,27 @@ const Explore = {
 {'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000",'year':"2021"},
 {'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000",'year':"2018"}]
         }
+    },
+    created: function() {
+        fetch("/api/cars", {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': token,
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            credentials: 'same-origin'        
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(jsonResponse) {
+            console.log(jsonResponse);
+            console.log(jsonResponse.data)
+            self.listOfCars = jsonResponse.data;
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
     }
 };
 
@@ -487,66 +513,66 @@ const AddCar = {
     template: `
     <div class="m-4">
         <h1 class="mb-4">Add New Car</h1>
-        <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar">
+        <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar()">
             <div class="mt-sm-1 mb-sm-1 d-flex flex-area1">
                 <div>
                     <label class="" for="make">Make</label><br>
-                    <input type="text" class="form-control form-field" name="make">
+                    <input type="text" class="form-control form-field" name="make" required>
                 </div>
                 <div>
                     <label class="" for="model">Model</label><br>
-                    <input type="text" class="form-control form-field" name="model">
+                    <input type="text" class="form-control form-field" name="model" required>
                 </div>
             </div>
             <div class="mt-sm-3 mb-sm-1 d-flex flex-area1">
                 <div>
                     <label class="" for="colour">Colour</label><br>
-                    <input type="text" class="form-control form-field" name="colour">
+                    <input type="text" class="form-control form-field" name="colour" required>
                 </div>
                 <div>
                     <label class="" for="year">Year</label><br>
-                    <input type="number" class="form-control form-field" name="year">
+                    <input type="text" class="form-control form-field" name="year" required>
                 </div>
             </div>
             <div class="mt-sm-3 mb-sm-1 d-flex flex-area1">
                 <div>
                     <label class="" for="price">Price</label><br>
-                    <input type="text" class="form-control form-field" name="price">
+                    <input type="number" class="form-control form-field" name="price" required>
                 </div>
                 <div>
                     <label class="" for="car_type">Car Type</label><br>
-                    <select name="car_type" class="form-control form-field">
-                        <option value="suv">SUV</option>
-                        <option value="truck">Truck</option>
-                        <option value="sedan">Sedan</option>
-                        <option value="van">Van</option>
-                        <option value="coupe">Coupe</option>
-                        <option value="wagon">Wagon</option>
-                        <option value="convertible">Convertible</option>
-                        <option value="sports">Sports Car</option>
-                        <option value="diesel">Diesel</option>
-                        <option value="crossover">Crossover</option>
-                        <option value="luxury">Luxury Car</option>
-                        <option value="hybrid">Hybrid/Electric</option>
-                        <option value="super">Super Car</option>
-                        <option value="hyper">Hyper Car</option>
+                    <select name="car_type" class="form-control form-field" required>
+                        <option value="SUV">SUV</option>
+                        <option value="Truck">Truck</option>
+                        <option value="Sedan">Sedan</option>
+                        <option value="Van">Van</option>
+                        <option value="Coupe">Coupe</option>
+                        <option value="Wagon">Wagon</option>
+                        <option value="Convertible">Convertible</option>
+                        <option value="Sports Car">Sports Car</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Crossover">Crossover</option>
+                        <option value="Luxury Car">Luxury Car</option>
+                        <option value="Hybrid/Electric">Hybrid/Electric</option>
+                        <option value="Super Car">Super Car</option>
+                        <option value="Hyper Car">Hyper Car</option>
                     </select>
                 </div>
             </div>
             <div class="mt-sm-3 mb-sm-1">
                 <label class="" for="transmission">Transmission</label><br>
-                <select name="transmission" class="form-control form-field">
-                    <option value="automatic">Automatic</option>
-                    <option value="manual">Manual</option>
+                <select name="transmission" class="form-control form-field" required>
+                    <option value="Automatic">Automatic</option>
+                    <option value="Manual">Manual</option>
                 </select>
             </div>
             <div class="mt-sm-3 mb-sm-1">
                 <label class="" for="description">Description</label><br>
-                <textarea name="description" class="form-control"></textarea><br>
+                <textarea name="description" class="form-control" required></textarea><br>
             </div>
             <div class="">
                 <label class="" for="photo">Upload Photo</label><br>
-                <input type="file" class="form-control form-field" name="photo" accept="image/x-png,image/jpg">
+                <input type="file" class="form-control form-field" name="photo" accept="image/x-png,image/jpg" required>
             </div>
             <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Save</button>
         </form>
@@ -556,18 +582,18 @@ const AddCar = {
         return {}
     }, 
     methods: {
-        getCar: function() {
+        addCar: function() {
 
             let self = this;
             let carForm = document.getElementById('car-form');
             let form_data = new FormData(carForm);
 
-            fetch("/api/cars/new", {
+            fetch("/api/cars", {
                 method: 'POST',
                 body: form_data,
                 headers: {
-                    'Authorization': `Bearer ${localStorage.token}`,
-                    'X-CSRFToken': token
+                    'X-CSRFToken': token,
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 },
                 credentials: 'same-origin'        
             })
