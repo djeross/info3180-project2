@@ -144,9 +144,7 @@ def login():
                 return jsonify(data={'message': 'Login Successful', 'token': token, 'id': user.id})
             else:
                 errors.append('Incorrect username or password')
-
-        else:
-            return jsonify(errors=form_errors(form) + errors)
+        return jsonify(errors=form_errors(form) + errors)
 
 @app.route('/api/auth/logout', methods=['POST'])
 @requires_auth

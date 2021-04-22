@@ -223,20 +223,19 @@ const Login = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log('success');
-                console.log(jsonResponse);
-
-                if(jsonResponse.token !== null) {
-                    console.log('inside')
-                    let jwt_token = jsonResponse.data.token;
-                    let id = jsonResponse.data.id;
-
-                    // stores token to localStorage
-                    localStorage.setItem('token', jwt_token);
-                    localStorage.setItem('current_user', id);
-                    
-                    router.push('/explore');
-
+                if(jsonResponse.errors==undefined){
+                    if(jsonResponse.token !== null) {
+                        let jwt_token = jsonResponse.data.token;
+                        let id = jsonResponse.data.id;
+                        // stores token to localStorage
+                        localStorage.setItem('token', jwt_token);
+                        localStorage.setItem('current_user', id);
+                        console.log(jsonResponse.data)
+                        router.push('/explore');
+                        swal({title: "Login",text: jsonResponse.data.message,icon: "success",button: "Proceed"});
+                    }
+                }else{
+                    swal({title: "Logged In",text: jsonResponse.errors[0],icon: "error",button: "Try Again"});  
                 }
 
             })
@@ -267,13 +266,13 @@ const Logout = {
           return response.json();
         })
         .then(function(jsonResponse){
-          console.log(jsonResponse);
-          console.log('logged out');
-          localStorage.removeItem('token');
-          localStorage.removeItem('current_user');
-          console.info('Token and current user removed from localStorage.');
-          
-          router.push('/');
+            console.log(jsonResponse);
+            console.log('logged out');
+            localStorage.removeItem('token');
+            localStorage.removeItem('current_user');
+            console.info('Token and current user removed from localStorage.');
+            router.push('/');
+            swal({title: "Logged Out",text: jsonResponse.data.message,icon: "success",button: "OK"});
         })
         .catch(function(error){
           console.log(error);
@@ -356,7 +355,7 @@ const Explore = {
         .catch(function(error) {
             console.log(error);
         });
-    }
+    } 
 };
 
 
