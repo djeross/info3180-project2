@@ -11,7 +11,7 @@ const app = Vue.createApp({
 app.component('app-header', {
     name: 'AppHeader',
     template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" :key="$route.fullPath">
     <router-link class="nav-link text-white" to="/" v-if="!isLoggedIn()"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</router-link>
     <router-link class="nav-link text-white" to="/explore" v-if="isLoggedIn()"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</router-link>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -254,8 +254,9 @@ const Logout = {
     created: function(){
         fetch("api/auth/logout", {
             headers: {
-                'Authorization': `Bearer ${localStorage.token}`,
-                'X-CSRFToken': token
+                'Content-Type': 'application/json',
+                'X-CSRFToken': token,
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             credentials: 'same-origin'
         })
@@ -330,6 +331,9 @@ const Explore = {
 {'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000"},
 {'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000"}]
         }
+    },
+    created: function() {
+        
     }
 };
 
@@ -359,7 +363,7 @@ const AddCar = {
     template: `
     <div class="m-4">
         <h1 class="mb-4">Add New Car</h1>
-        <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar">
+        <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar()">
             <div class="mt-sm-1 mb-sm-1 d-flex flex-area1">
                 <div>
                     <label class="" for="make">Make</label><br>
@@ -428,18 +432,18 @@ const AddCar = {
         return {}
     }, 
     methods: {
-        getCar: function() {
+        addCar: function() {
 
             let self = this;
             let carForm = document.getElementById('car-form');
             let form_data = new FormData(carForm);
 
-            fetch("/api/cars/new", {
+            fetch("/api/cars", {
                 method: 'POST',
                 body: form_data,
                 headers: {
-                    'Authorization': `Bearer ${localStorage.token}`,
-                    'X-CSRFToken': token
+                    'X-CSRFToken': token,
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 },
                 credentials: 'same-origin'        
             })
