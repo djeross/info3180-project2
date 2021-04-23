@@ -286,11 +286,14 @@ def favourite(car_id):
 @requires_auth
 def remove_favourite(car_id):
 
-    Favourites.query.filter(Favourites.car_id == car_id).filter(Favourites.user_id == g.current_user["id"] ).first().delete()
+    fav = Favourites.query.filter(Favourites.car_id == car_id).filter(Favourites.user_id == g.current_user["id"] ).first()
+
+    db.session.delete(fav)
+    db.session.commit()
 
     data = {
         'message': 'Car Successfully Unfavourited',
-        'id': car.id
+        'id': car_id
     }
 
     return jsonify(data=data)

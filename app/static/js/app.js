@@ -596,6 +596,24 @@ const CarDetails = {
                 });
             }
             else{
+                fetch("/api/cars/"+this.$route.params.id+"/favourite/remove", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': token,
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    credentials: 'same-origin' 
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(jsonResponse) {
+                    console.log(jsonResponse.data)
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
             }
         },
         checkfav(){
