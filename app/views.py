@@ -126,8 +126,7 @@ def login():
 
             username = form.username.data
             password = form.password.data
-            print(username)
-            print(password)
+            
             user = Users.query.filter_by(username=username).first()
 
             if user is not None and check_password_hash(user.password, password):

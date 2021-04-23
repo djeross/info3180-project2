@@ -446,7 +446,7 @@ const Profile = {
                                 </a>
 
                             </div>
-                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                            <a :href="cars.id" class="btn btn-primary card-view-btn" @click="getCarFavDetails">View more details</a>
                         </div>
                     </div>
                 </div>
@@ -490,6 +490,13 @@ const Profile = {
             .catch(function(error) {
                 console.log(error);
             });      
+    },
+    methods:{
+        getCarFavDetails: function(event) {
+            event.preventDefault();
+            let carid=event.target.getAttribute("href");
+            router.push({ name: 'details', params: { id: carid}}); 
+        }
     },
     data() {
         return {
