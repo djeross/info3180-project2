@@ -463,7 +463,7 @@ const Profile = {
             })
             .then(function(jsonResponse) {
                 self.userInfo = jsonResponse.data;
-                console.log(jsonResponse.data)
+                //console.log(jsonResponse.data)
                 fetch("/api/users/"+ localStorage.getItem('current_user') + "/favourites", {
                     method: 'GET',
                     headers: {
@@ -477,7 +477,7 @@ const Profile = {
                 })
                 .then(function(jsonResponse) {
                     self.listOfCars = jsonResponse.data;
-                    console.log(jsonResponse.data)
+                    //console.log(jsonResponse.data)
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -557,6 +557,7 @@ const CarDetails = {
         .then(function(jsonResponse) {
             self.details = jsonResponse.data;
             console.log(jsonResponse.data)
+            console.log(jsonResponse)
         })
         .catch(function(error) {
             console.log(error);

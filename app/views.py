@@ -254,9 +254,9 @@ def get_car(car_id):
     }]
 
     isFav = False
-    test = Favourites.query.filter_by(car_id=car_id,user_id=car.userid).all()
+    test = Favourites.query.filter(Favourites.car_id == car.id).filter(Favourites.user_id == car.userid ).first()
 
-    if isFav is not None:
+    if test is not None:
         isFav = True
 
     return jsonify(data=data, isFav=isFav)
