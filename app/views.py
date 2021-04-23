@@ -278,6 +278,19 @@ def favourite(car_id):
 
     return jsonify(data=data)
 
+@app.route("/api/cars/<car_id>/favourite/remove", methods=["POST"])
+@requires_auth
+def remove_favourite(car_id):
+
+    Favourites.query.filter_by(car_id=car_id).delete()
+
+    data = [{
+        'message': 'Car Successfully Unfavourited',
+        'id': car.id
+    }]
+
+    return jsonify(data=data)
+
 @app.route('/api/search', methods=['GET'])
 @requires_auth
 def search():
