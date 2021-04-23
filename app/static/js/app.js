@@ -173,8 +173,13 @@ const Register = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                router.push('/login');
-                swal({title: "Register",text: "User Successfully registered",icon: "success",button: "Proceed"});
+                console.log(jsonResponse)
+                if(jsonResponse.errors==undefined){
+                    router.push('/login');
+                    swal({title: "Register",text: "User Successfully registered",icon: "success",button: "Proceed"});
+                }else{
+                    swal({title: "Register",text: jsonResponse.errors[0],icon: "error",button: "Try Again"});
+                }
             })
             .catch(function(error) {
                 console.log(error);
@@ -222,6 +227,7 @@ const Login = {
                 return response.json();
             })
             .then(function(jsonResponse) {
+                
                 if(jsonResponse.errors==undefined){
                     if(jsonResponse.token !== null) {
                         let jwt_token = jsonResponse.data.token;
@@ -502,7 +508,6 @@ const CarDetails = {
             <div id="display-car-details" v-if="details[0]">
                 <div id="car-details-card">
                     <img id="car-d-image" class="car-detail-image" src='/static/images/car1.jpg' alt="car image in card">
-                    
                     <div id="car-details">
                         <h1 id="car-d-heading" > {{details[0].year.concat(" ",details[0].make)}}</h1>
                         <h4 class="graytext">{{details[0].model}}</h4>
@@ -533,7 +538,8 @@ const CarDetails = {
                         <div id="card-d-btns" >
                             <a href="#" class="btn btn-success email-owner">Email Owner</a>
                             <div id="card-d-heart" >
-                                <button href="#" @click="addFavourite" id="heartbtn" class="heart fa fa-heart-o"></button>
+                                <button href="#" v-if="checkfav()" @click="addFavourite" id="heartbtn" class="heart fa fa-heart"></button>
+                                <button href="#" v-else @click="addFavourite" id="heartbtn" class="heart fa fa-heart-o fa-heart"></button>
                             </div>
                         </div>
                     </div>
@@ -554,10 +560,11 @@ const CarDetails = {
         .then(function(response) {
             return response.json();
         })
-        .then(function(jsonResponse) {
+        .then(function(jsonResponse){
             self.details = jsonResponse.data;
-            console.log(jsonResponse.data)
-            console.log(jsonResponse)
+            this.isFav=jsonResponse.isFav;
+            console.log(jsonResponse.isFav);
+            console.log(jsonResponse.data);
         })
         .catch(function(error) {
             console.log(error);
@@ -566,8 +573,7 @@ const CarDetails = {
     methods: {
         addFavourite: function(event) {
             event.target.classList.toggle("fa-heart-o");
-            event.target.classList.toggle("fa-heart");
-            if(event.target.classList.contains("fa-heart")===true){
+            if(event.target.classList.contains("fa-heart-o")===false){
                 fetch("/api/cars/"+this.$route.params.id+"/favourite", {
                     method: 'POST',
                     body: JSON.stringify({"car_id": this.$route.params.id,"user_id": localStorage.getItem("current_user")}),
@@ -593,11 +599,19 @@ const CarDetails = {
             }
             else{
             }
+        },
+        checkfav(){
+            if (self.isFav) {
+                return true;
+            }
+            return false;
+        
         }
     },
     data(){
         return {
-            details: []
+            details: [],
+            isFav: false
         }
     }
 };

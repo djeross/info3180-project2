@@ -78,7 +78,6 @@ def register():
             photo = form.photo.data
             filename = secure_filename(photo.filename)
             date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
             user1 = Users.query.filter_by(username=username).first()
             user2 = Users.query.filter_by(email=email).first()
             if user1 is None:
@@ -127,11 +126,11 @@ def login():
 
             username = form.username.data
             password = form.password.data
-
+            print(username)
+            print(password)
             user = Users.query.filter_by(username=username).first()
 
             if user is not None and check_password_hash(user.password, password):
-                
                 payload = {
                     'id': user.id,
                     'username': user.username,
@@ -254,7 +253,7 @@ def get_car(car_id):
     }]
 
     isFav = False
-    test = Favourites.query.filter(Favourites.car_id == car.id).filter(Favourites.user_id == car.userid ).first()
+    test = Favourites.query.filter(Favourites.car_id == car.id).filter(Favourites.user_id == g.current_user['id'] ).first()
 
     if test is not None:
         isFav = True
