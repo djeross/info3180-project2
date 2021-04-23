@@ -236,7 +236,6 @@ def get_all_cars():
 def get_car(car_id):
 
     car = Cars.query.filter_by(id=car_id).first()
-
     if car is None:
         return jsonify({"message": "Car does not exist", 'errors': []})
 
@@ -259,18 +258,24 @@ def get_car(car_id):
 @app.route("/api/cars/<car_id>/favourite", methods=["POST"])
 @requires_auth
 def favourite(car_id):
+    json_favourite= request.get_json(silent=True)
+    cid=json_favourite.get("car_id")
+    uid=json_favourite.get("user_id")
 
-    favourite = Favourites(car_id=car_id, user_id=g.current_user["id"])
+    isFav=Favourites.query.filter(Favourites.car_id == cid).filter(Favourites.user_id == uid ).first()
+   
+    if isFav== None:
+        favourite = Favourites(car_id=cid, user_id=uid)
+        db.session.add(favourite)
+        db.session.commit()
+        data = {
+            'message': 'Car Successfully Favourited',
+            'id': car_id
+        }
+        return jsonify(data=data)
+    return jsonify({"warning":"Car is Already a Favourite"})
 
-    db.session.add(favourite)
-    db.session.commit()
 
-    data = [{
-        'message': 'Car Successfully Favourited',
-        'id': car.id
-    }]
-
-    return jsonify(data=data)
 
 @app.route("/api/users/<user_id>", methods=["GET"])
 @requires_auth

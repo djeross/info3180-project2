@@ -28,7 +28,7 @@ app.component('app-header', {
                 <router-link class="nav-link" to="/explore">Explore <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-                <router-link class="nav-link" to="/users/">My Profile <span class="sr-only">(current)</span></router-link>
+                <router-link class="nav-link" :to="{ name: 'users', params:{id: ${localStorage.getItem("current_user")}}}">My Profile <span class="sr-only">(current)</span></router-link>
             </li>
         </ul>
       
@@ -173,8 +173,6 @@ const Register = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log('success');
-                console.log(jsonResponse);
                 router.push('/login');
                 swal({title: "Register",text: "User Successfully registered",icon: "success",button: "Proceed"});
             })
@@ -231,7 +229,6 @@ const Login = {
                         // stores token to localStorage
                         localStorage.setItem('token', jwt_token);
                         localStorage.setItem('current_user', id);
-                        console.log(jsonResponse.data)
                         router.push('/explore');
                         swal({title: "Login",text: jsonResponse.data.message,icon: "success",button: "Proceed"});
                     }
@@ -267,13 +264,9 @@ const Logout = {
           return response.json();
         })
         .then(function(jsonResponse){
-            console.log(jsonResponse);
-            console.log('logged out');
             localStorage.removeItem('token');
             localStorage.removeItem('current_user');
-            console.info('Token and current user removed from localStorage.');
             router.push('/');
-            swal({title: "Logged Out",text: jsonResponse.data.message,icon: "success",button: "OK"});
         })
         .catch(function(error){
           console.log(error);
@@ -344,7 +337,6 @@ const Explore = {
         })
         .then(function(jsonResponse) {
             self.listOfCars = jsonResponse.data;
-            console.log(jsonResponse.data)
         })
         .catch(function(error) {
             console.log(error);
@@ -358,8 +350,8 @@ const Explore = {
     methods: {
         getCarDetails: function(event) {
             event.preventDefault();
-            alert(event.target.getAttribute("href"));
-            
+        let carid=event.target.getAttribute("href");
+        router.push({ name: 'details', params: { id: carid}});    
         }
     }
 };
@@ -422,25 +414,21 @@ const Profile = {
                 </div>
             </div>
         </div>  
-    `,
-    data() {
-        return {
-            listOfCars: [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000",'year':"2016"},
-{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000",'year':"2020"},
-{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000",'year':"2020"}],
-            userInfo: [{'photo':"http://localhost:8080/static/images/car3.jpg",'username':"Mary",'name':"Mary Jane",'email':"maryjane@yahoo.com",'location':"London,England",
-'biography':"A personal biography is a concise introduction that provides a summarized version of your professional accomplishments, your credentials and education, and other information that makes you who you are. Personal bios are often used when seeking employment to provide hiring managers with a synopsis of why you are the ideal candidate for the job. They can also be used on networking platforms and professional websites.",'date_joined':"April 1,2020"
-}]
-        }
-    }, 
+    `, 
     methods: {
-        getUser() {
+        getUser: function() {
             
         },
 
-        getTopFavs() {
+        getTopFavs:function() {
             
         },
+    },
+    data() {
+        return {
+            listOfCars: [],
+            userInfo: []
+        }
     }
 };
 
@@ -448,12 +436,12 @@ const CarDetails = {
     name: 'CarDetails',
     template: `
         <div class="container maincontainer">
-            <div id="display-car-details">
+            <div id="display-car-details" v-if="details[0]">
                 <div id="car-details-card">
                     <img id="car-d-image" class="car-detail-image" src='/static/images/car1.jpg' alt="car image in card">
                     
                     <div id="car-details">
-                        <h1 id="car-d-heading"> {{details[0].year.concat(" ",details[0].make)}}</h1>
+                        <h1 id="car-d-heading" > {{details[0].year.concat(" ",details[0].make)}}</h1>
                         <h4 class="graytext">{{details[0].model}}</h4>
                         <p class="car-d-description graytext">{{details[0].description}}</p>
                         <div id="cpbd">
@@ -473,7 +461,7 @@ const CarDetails = {
                                     <p class="car-d-spec graytext">Transmission</p>
                                 </div>
                                 <div>
-                                    <p class="car-d-spec">{{details[0].car_type}}</p>
+                                    <p class="car-d-spec">{{details[0].type}}</p>
                                     <p class="car-d-spec">{{details[0].transmission}}</p>
                                 </div>
                             </div>
@@ -490,26 +478,62 @@ const CarDetails = {
             </div>
         </div> 
     `,
-    data() {
-        return {
-            details: [{"id": 207,
-    "description": "The best electic car anyone can buy. With the longest range and quickest acceleration of any electric vehicle in production, Model S Plaid is the highest performing sedan ever built",
-    "year": "2018","make": "Tesla","model": "Model S Plaid","colour": "Red","transmission": "Automatic",
-    "car_type": "Sedan","price": ".420420420","photo": "http://localhost/images/tesla.jpg","user_id": 2
-            }]
-        }
+    created(){
+        let self=this;
+        fetch("/api/cars/"+this.$route.params.id, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': token,
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            credentials: 'same-origin'        
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(jsonResponse) {
+            self.details = jsonResponse.data;
+            console.log(jsonResponse.data)
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
     }, 
     methods: {
         addFavourite: function(event) {
             event.target.classList.toggle("fa-heart-o");
             event.target.classList.toggle("fa-heart");
             if(event.target.classList.contains("fa-heart")===true){
-                alert()
-                alert("added to Fav list");
+                fetch("/api/cars/"+this.$route.params.id+"/favourite", {
+                    method: 'POST',
+                    body: JSON.stringify({"car_id": this.$route.params.id,"user_id": localStorage.getItem("current_user")}),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': token,
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    credentials: 'same-origin' 
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(jsonResponse) {
+                    console.log(jsonResponse.data)
+                    if (jsonResponse.message!=undefined) {
+                        
+                    }
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
             }
             else{
-                alert("remove from Fav list");
             }
+        }
+    },
+    data(){
+        return {
+            details: []
         }
     }
 };
@@ -639,9 +663,9 @@ const routes = [
     { path: "/login", component: Login },
     { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
-    { path: `/users/:id`, component: Profile },
+    { path: `/users/:id`,name:"users", component: Profile },
     { path: "/cars/new", component: AddCar },
-    { path: "/cars/:id", component: CarDetails},
+    { path: "/cars/:id",name:"details", component: CarDetails},
 
     // This is a catch all route in case none of the above matches
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
