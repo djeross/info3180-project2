@@ -211,7 +211,7 @@ def get_all_cars():
     cars = db.session.query(Cars).all()
     data = []
 
-    if cars == []:
+    if cars is None:
         return jsonify({"message": "No cars available", 'errors': []})
 
     for car in cars:
@@ -253,7 +253,13 @@ def get_car(car_id):
             'user_id': car.userid
     }]
 
-    return jsonify(data=data)
+    isFav = False
+    test = Favourites.query.filter_by(car_id=car_id,user_id=car.userid).all()
+
+    if isFav is not None:
+        isFav = True
+
+    return jsonify(data=data, isFav=isFav)
 
 @app.route("/api/cars/<car_id>/favourite", methods=["POST"])
 @requires_auth
@@ -276,6 +282,61 @@ def favourite(car_id):
     return jsonify({"warning":"Car is Already a Favourite"})
 
 
+
+@app.route("/api/cars/<car_id>/favourite/remove", methods=["POST"])
+@requires_auth
+def remove_favourite(car_id):
+
+    Favourites.query.filter_by(car_id=car_id).delete()
+
+    data = [{
+        'message': 'Car Successfully Unfavourited',
+        'id': car.id
+    }]
+
+    return jsonify(data=data)
+
+@app.route('/api/search', methods=['GET'])
+@requires_auth
+def search():
+
+    form = ExploreForm(request.args)
+
+    
+    make = form.make.data
+    model = form.model.data
+    
+    if (make == "") and (model != ""):
+        cars = Cars.query.filter_by(model=model).all()
+    elif (make != "") and (model == ""):
+        cars = Cars.query.filter_by(make=make).all()
+    elif (make != "") and (model != ""):
+        cars = Cars.query.filter_by(make=make,model=model).all()
+    else:
+        cars = cars = db.session.query(Cars).all()
+
+    data = []
+
+    if cars is None:
+        return jsonify({"message": "No cars available with that criteria", 'errors': []})
+
+    for car in cars:
+        data.append({
+            'id': car.id,
+            'description': car.description,
+            'year': car.year,
+            'make': car.make,
+            'model': car.model,
+            'colour': car.colour,
+            'transmission': car.transmission,
+            'type': car.car_type,
+            'price': car.price,
+            'photo': car.photo,
+            'user_id': car.userid
+        })
+
+    return jsonify(data=data)
+   
 
 @app.route("/api/users/<user_id>", methods=["GET"])
 @requires_auth
@@ -307,7 +368,7 @@ def get_user_favourites(user_id):
     favourites = Favourites.query.filter_by(user_id=user_id).all()
     data = []
 
-    if favourites == []:
+    if favourites is None:
         return jsonify({"message": "User has no favourites", 'errors': []})
 
     for favourite in favourites:
