@@ -254,9 +254,13 @@ def get_car(car_id):
             'user_id': car.userid
     }]
 
-    test = Cars.query.filter_by(make=make,model=model).all()
+    isFav = False
+    test = Favourites.query.filter_by(car_id=car_id,user_id=car.userid).all()
 
-    return jsonify(data=data)
+    if isFav is not None:
+        isFav = True
+
+    return jsonify(data=data, isFav=isFav)
 
 @app.route("/api/cars/<car_id>/favourite", methods=["POST"])
 @requires_auth
