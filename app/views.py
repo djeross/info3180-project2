@@ -347,17 +347,16 @@ def get_user(user_id):
     if user is None:
         return jsonify({"message": "User does not exist", 'errors': []})
 
-    data = [
-        {
+    data = {
         'id': user.id,
         'username': user.username,
-        'name': user.fullname,
-        'photo': user.filename,
+        'name': user.name,
+        'photo': user.photo,
         'email': user.email,
         'location': user.location,
         'biography': user.biography,
         'date_joined': user.date
-    }]
+    }
 
     return jsonify(data=data)
 

@@ -402,9 +402,9 @@ const Profile = {
                         <img class="favcar" id="round" src="./uploads/5dc098e0d8d84605b9674ef9.jpg">
                     </div>
                     <div id="profiledetailsdiv" class="descriptions">
-                        <h2 id="profile-name">{{userInfo[0].name}}</h2>
-                        <h4 class="graytext">@<span>{{userInfo[0].username}}</span></h4>
-                        <p class="graytext">{{userInfo[0].biography}}</p>
+                        <h2 id="profile-name">{{userInfo.name}}</h2>
+                        <h4 class="graytext">@<span>{{userInfo.username}}</span></h4>
+                        <p class="graytext">{{userInfo.biography}}</p>
                         <div id="elj">
                             <div>
                                 <p class="profile-user-info graytext">Email</p>
@@ -412,9 +412,9 @@ const Profile = {
                                 <p class="profile-user-info graytext">Joined</p>
                             </div>
                             <div>
-                                <p class="profile-user-info">{{userInfo[0].email}}</p>
-                                <p class="profile-user-info">{{userInfo[0].location}}</p>
-                                <p class="profile-user-info">{{userInfo[0].date_joined}}</p>
+                                <p class="profile-user-info">{{userInfo.email}}</p>
+                                <p class="profile-user-info">{{userInfo.location}}</p>
+                                <p class="profile-user-info">{{userInfo.date_joined}}</p>
                             </div>
                         </div>
                     </div>
@@ -448,14 +448,44 @@ const Profile = {
             </div>
         </div>  
     `, 
-    methods: {
-        getUser: function() {
-            
-        },
-
-        getTopFavs:function() {
-            
-        },
+    created: function() {
+        let self=this;
+            fetch("/api/users/"+ localStorage.getItem('current_user'), {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': token,
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                credentials: 'same-origin'        
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                self.userInfo = jsonResponse.data;
+                console.log(jsonResponse.data)
+                fetch("/api/users/"+ localStorage.getItem('current_user') + "/favourites", {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': token,
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    credentials: 'same-origin'        
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(jsonResponse) {
+                    self.listOfCars = jsonResponse.data;
+                    console.log(jsonResponse.data)
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+            })
+            .catch(function(error) {
+                console.log(error);
+            });      
     },
     data() {
         return {
