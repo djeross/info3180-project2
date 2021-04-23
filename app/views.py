@@ -66,7 +66,7 @@ def register():
     errors = []
 
     if request.method == 'POST':
-
+        print("post")
         if form.validate_on_submit():
 
             username = form.username.data
@@ -113,9 +113,7 @@ def register():
                     errors.append("Email is already taken")
             else:
                 errors.append('Username is already taken')
-
-        else:
-            return jsonify(errors=form_errors(form) + errors)
+        return jsonify(errors=form_errors(form) + errors)
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
@@ -146,9 +144,7 @@ def login():
                 return jsonify(data={'message': 'Login Successful', 'token': token, 'id': user.id})
             else:
                 errors.append('Incorrect username or password')
-
-        else:
-            return jsonify(errors=form_errors(form) + errors)
+        return jsonify(errors=form_errors(form) + errors)
 
 @app.route('/api/auth/logout', methods=['POST'])
 @requires_auth

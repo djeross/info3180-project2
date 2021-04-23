@@ -28,7 +28,7 @@ app.component('app-header', {
                 <router-link class="nav-link" to="/explore">Explore <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-                <router-link class="nav-link" to="/">My Profile <span class="sr-only">(current)</span></router-link>
+                <router-link class="nav-link" to="/users/">My Profile <span class="sr-only">(current)</span></router-link>
             </li>
         </ul>
       
@@ -109,7 +109,8 @@ const Home = {
 const Register = {
     name: 'Register',
     template: `
-        <div class="center-form register m-4 justify-content-center align-items-center">
+        <div class="maincontainer">
+        <div class="register m-4">
             <h1 class="mb-4">Register New User</h1>
             <form method="POST" class="form" action="" id="register-form" @submit.prevent="registerUser()">
                 <div class="d-flex flex-area1 mt-sm-1 mb-sm-1">
@@ -142,10 +143,11 @@ const Register = {
                 </div>
                 <div class="">
                     <label class="" for="photo">Upload Photo</label><br>
-                    <input type="file" class="form-control form-field" name="photo" accept="image/x-png,image/jpg" required>
+                    <input type="file" class="form-control form-field" name="photo" accept=".jpeg, .jpg, .png">
                 </div>
                 <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Register</button>
             </form>
+        </div>
         </div>
     `,
     data: function() {
@@ -159,7 +161,6 @@ const Register = {
             let self = this;
             let registerForm = document.getElementById('register-form');
             let form_data = new FormData(registerForm);
-
             fetch("/api/register", {
                 method: 'POST',
                 body: form_data,
@@ -175,6 +176,7 @@ const Register = {
                 console.log('success');
                 console.log(jsonResponse);
                 router.push('/login');
+                swal({title: "Register",text: "User Successfully registered",icon: "success",button: "Proceed"});
             })
             .catch(function(error) {
                 console.log(error);
@@ -222,20 +224,19 @@ const Login = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log('success');
-                console.log(jsonResponse);
-
-                if(jsonResponse.token !== null) {
-                    console.log('inside')
-                    let jwt_token = jsonResponse.data.token;
-                    let id = jsonResponse.data.id;
-
-                    // stores token to localStorage
-                    localStorage.setItem('token', jwt_token);
-                    localStorage.setItem('current_user', id);
-                    
-                    router.push('/explore');
-
+                if(jsonResponse.errors==undefined){
+                    if(jsonResponse.token !== null) {
+                        let jwt_token = jsonResponse.data.token;
+                        let id = jsonResponse.data.id;
+                        // stores token to localStorage
+                        localStorage.setItem('token', jwt_token);
+                        localStorage.setItem('current_user', id);
+                        console.log(jsonResponse.data)
+                        router.push('/explore');
+                        swal({title: "Login",text: jsonResponse.data.message,icon: "success",button: "Proceed"});
+                    }
+                }else{
+                    swal({title: "Logged In",text: jsonResponse.errors[0],icon: "error",button: "Try Again"});  
                 }
 
             })
@@ -266,13 +267,13 @@ const Logout = {
           return response.json();
         })
         .then(function(jsonResponse){
-          console.log(jsonResponse);
-          console.log('logged out');
-          localStorage.removeItem('token');
-          localStorage.removeItem('current_user');
-          console.info('Token and current user removed from localStorage.');
-          
-          router.push('/');
+            console.log(jsonResponse);
+            console.log('logged out');
+            localStorage.removeItem('token');
+            localStorage.removeItem('current_user');
+            console.info('Token and current user removed from localStorage.');
+            router.push('/');
+            swal({title: "Logged Out",text: jsonResponse.data.message,icon: "success",button: "OK"});
         })
         .catch(function(error){
           console.log(error);
@@ -283,7 +284,7 @@ const Logout = {
 const Explore = {
     name: 'Explore',
     template: `
-        <div class="container" id="favcontainer">
+        <div class="container maincontainer">
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
@@ -303,6 +304,98 @@ const Explore = {
                 </div>  
 
                 <div class="carslist">
+                <div v-for="cars in listOfCars">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top favcar"  :src="cars.photo">
+                        <div class="card-body">
+                            <div class="name-model-price">
+
+                                <div class="name-model">
+                                    <span  class="car-name">{{cars.year.concat(" ",cars.make)}}</span>
+                                    <span class="graytext">{{cars.model}}</span>
+                                </div>
+
+                                <a href="#" class="btn btn-success card-price-btn">
+                                    <img class="icons" src='/static/images/tagicon.png'>
+                                    <span><span>$</span>{{cars.price}}</span>
+                                </a>
+
+                            </div>
+                            <a :href="cars.id" class="btn btn-primary card-view-btn" @click="getCarDetails">View more details</a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    `,
+    created() {
+        let self = this;
+        fetch("/api/cars", {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': token,
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            credentials: 'same-origin'        
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(jsonResponse) {
+            self.listOfCars = jsonResponse.data;
+            console.log(jsonResponse.data)
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+    },
+    data() {
+        return {
+            listOfCars : []
+        }
+    },
+    methods: {
+        getCarDetails: function(event) {
+            event.preventDefault();
+            alert(event.target.getAttribute("href"));
+            
+        }
+    }
+};
+
+const Profile = {
+    name: 'Profile',
+    template: `
+        <div class="container maincontainer">
+            <div id="displayfav">
+
+                <div id="profile">
+                    <div id="profileimagediv">
+                        <img class="favcar" id="round" src="./uploads/5dc098e0d8d84605b9674ef9.jpg">
+                    </div>
+                    <div id="profiledetailsdiv" class="descriptions">
+                        <h2 id="profile-name">{{userInfo[0].name}}</h2>
+                        <h4 class="graytext">@<span>{{userInfo[0].username}}</span></h4>
+                        <p class="graytext">{{userInfo[0].biography}}</p>
+                        <div id="elj">
+                            <div>
+                                <p class="profile-user-info graytext">Email</p>
+                                <p class="profile-user-info graytext">Location</p>
+                                <p class="profile-user-info graytext">Joined</p>
+                            </div>
+                            <div>
+                                <p class="profile-user-info">{{userInfo[0].email}}</p>
+                                <p class="profile-user-info">{{userInfo[0].location}}</p>
+                                <p class="profile-user-info">{{userInfo[0].date_joined}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carsfavtext"><h1>Cars Favourited</h1></div>
+
+                <div class="carslist">
                 <div v-for="cars in listOfCars.slice(0, 3)">
                     <div class="card" style="width: 18rem;">
                         <img class="card-img-top favcar"  :src="cars.photo">
@@ -310,7 +403,7 @@ const Explore = {
                             <div class="name-model-price">
 
                                 <div class="name-model">
-                                    <span  class="car-name">{{cars.make}}</span>
+                                    <span  class="car-name">{{cars.year.concat(" ",cars.make)}}</span>
                                     <span class="graytext">{{cars.model}}</span>
                                 </div>
 
@@ -326,54 +419,96 @@ const Explore = {
                 </div>
                 </div>
             </div>
-        </div>
+        </div>  
     `,
     data() {
         return {
-            listOfCars : [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000"},
-{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000"},
-{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000"}]   
+            listOfCars: [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000",'year':"2016"},
+{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000",'year':"2020"},
+{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000",'year':"2020"}],
+            userInfo: [{'photo':"http://localhost:8080/static/images/car3.jpg",'username':"Mary",'name':"Mary Jane",'email':"maryjane@yahoo.com",'location':"London,England",
+'biography':"A personal biography is a concise introduction that provides a summarized version of your professional accomplishments, your credentials and education, and other information that makes you who you are. Personal bios are often used when seeking employment to provide hiring managers with a synopsis of why you are the ideal candidate for the job. They can also be used on networking platforms and professional websites.",'date_joined':"April 1,2020"
+}]
         }
-    },
-    created: function() {
-        fetch("/api/cars", {
-            method: 'GET',
-            headers: {
-                'X-CSRFToken': token,
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            credentials: 'same-origin'        
-        })
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(jsonResponse) {
-            console.log(jsonResponse);
-            console.log(jsonResponse.data)
-            self.listOfCars = jsonResponse.data;
-        })
-        .catch(function(error) {
-            console.log(error);
-        });
+    }, 
+    methods: {
+        getUser() {
+            
+        },
+
+        getTopFavs() {
+            
+        },
     }
 };
 
-const Profile = {
-    name: 'Profile',
+const CarDetails = {
+    name: 'CarDetails',
     template: `
-        
+        <div class="container maincontainer">
+            <div id="display-car-details">
+                <div id="car-details-card">
+                    <img id="car-d-image" class="car-detail-image" src='/static/images/car1.jpg' alt="car image in card">
+                    
+                    <div id="car-details">
+                        <h1 id="car-d-heading"> {{details[0].year.concat(" ",details[0].make)}}</h1>
+                        <h4 class="graytext">{{details[0].model}}</h4>
+                        <p class="car-d-description graytext">{{details[0].description}}</p>
+                        <div id="cpbd">
+                            <div id="cp">
+                                <div>
+                                    <p class="car-d-spec graytext">Color</p>
+                                    <p class="car-d-spec graytext">Price</p>
+                                </div>
+                                <div>
+                                    <p class="car-d-spec">{{details[0].colour}}</p>
+                                    <p class="car-d-spec">{{details[0].price}}</p>
+                                </div>
+                            </div>
+                            <div id="bd">
+                                <div>
+                                    <p class="car-d-spec graytext">Body Type</p>
+                                    <p class="car-d-spec graytext">Transmission</p>
+                                </div>
+                                <div>
+                                    <p class="car-d-spec">{{details[0].car_type}}</p>
+                                    <p class="car-d-spec">{{details[0].transmission}}</p>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <div id="card-d-btns" >
+                            <a href="#" class="btn btn-success email-owner">Email Owner</a>
+                            <div id="card-d-heart" >
+                                <button href="#" @click="addFavourite" id="heartbtn" class="heart fa fa-heart-o"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
     `,
     data() {
-        return {}
+        return {
+            details: [{"id": 207,
+    "description": "The best electic car anyone can buy. With the longest range and quickest acceleration of any electric vehicle in production, Model S Plaid is the highest performing sedan ever built",
+    "year": "2018","make": "Tesla","model": "Model S Plaid","colour": "Red","transmission": "Automatic",
+    "car_type": "Sedan","price": ".420420420","photo": "http://localhost/images/tesla.jpg","user_id": 2
+            }]
+        }
     }, 
     methods: {
-        getUser: function() {
-            
-        },
-
-        getTopFavs: function() {
-            
-        },
+        addFavourite: function(event) {
+            event.target.classList.toggle("fa-heart-o");
+            event.target.classList.toggle("fa-heart");
+            if(event.target.classList.contains("fa-heart")===true){
+                alert()
+                alert("added to Fav list");
+            }
+            else{
+                alert("remove from Fav list");
+            }
+        }
     }
 };
 
@@ -441,7 +576,7 @@ const AddCar = {
             </div>
             <div class="">
                 <label class="" for="photo">Upload Photo</label><br>
-                <input type="file" class="form-control form-field" name="photo" accept="image/x-png,image/jpg" required>
+                <input type="file" class="form-control form-field" name="photo" accept=".jpeg, .jpg, .png" required>
             </div>
             <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Save</button>
         </form>
@@ -502,9 +637,9 @@ const routes = [
     { path: "/login", component: Login },
     { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
-    { path: "/users/:id", component: Profile },
+    { path: `/users/:id`, component: Profile },
     { path: "/cars/new", component: AddCar },
-    /*{ path: "/cars/:id", component: Car },*/
+    { path: "/cars/:id", component: CarDetails},
 
     // This is a catch all route in case none of the above matches
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
