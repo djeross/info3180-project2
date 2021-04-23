@@ -289,10 +289,10 @@ def remove_favourite(car_id):
 
     Favourites.query.filter(Favourites.car_id == car_id).filter(Favourites.user_id == g.current_user["id"] ).first().delete()
 
-    data = [{
+    data = {
         'message': 'Car Successfully Unfavourited',
         'id': car.id
-    }]
+    }
 
     return jsonify(data=data)
 
