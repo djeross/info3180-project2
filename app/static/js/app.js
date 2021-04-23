@@ -28,7 +28,7 @@ app.component('app-header', {
                 <router-link class="nav-link" to="/explore">Explore <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-                <router-link class="nav-link" :to="{ name: 'users', params:{id: ${localStorage.getItem("current_user")}}}">My Profile <span class="sr-only">(current)</span></router-link>
+                <router-link class="nav-link" :to="{ name: 'users', params: {id: ${localStorage.getItem("current_user")}}}">My Profile <span class="sr-only">(current)</span></router-link>
             </li>
         </ul>
       
@@ -469,7 +469,6 @@ const Profile = {
             })
             .then(function(jsonResponse) {
                 self.userInfo = jsonResponse.data;
-                //console.log(jsonResponse.data)
                 fetch("/api/users/"+ localStorage.getItem('current_user') + "/favourites", {
                     method: 'GET',
                     headers: {
@@ -483,7 +482,6 @@ const Profile = {
                 })
                 .then(function(jsonResponse) {
                     self.listOfCars = jsonResponse.data;
-                    //console.log(jsonResponse.data)
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -741,7 +739,7 @@ const routes = [
     { path: "/login", component: Login },
     { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
-    { path: `/users/:id`,name:"users", component: Profile },
+    { path: "/users/:id",name:"users", component: Profile },
     { path: "/cars/new", component: AddCar },
     { path: "/cars/:id",name:"details", component: CarDetails},
 
