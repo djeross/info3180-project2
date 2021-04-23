@@ -371,13 +371,8 @@ const Explore = {
                 form_values.push(p[1].trim());
             }
 
-            //console.log(form_values);
-
             let make = form_values[0];
             let model = form_values[1];
-
-            //console.log(make);
-            //console.log(model);
 
             fetch("/api/search?make=" + make + "&model=" + model, {
                 method: 'GET',

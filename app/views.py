@@ -211,7 +211,7 @@ def get_all_cars():
     cars = db.session.query(Cars).all()
     data = []
 
-    if cars == []:
+    if cars is None:
         return jsonify({"message": "No cars available", 'errors': []})
 
     for car in cars:
@@ -254,6 +254,8 @@ def get_car(car_id):
             'user_id': car.userid
     }]
 
+    test = Cars.query.filter_by(make=make,model=model).all()
+
     return jsonify(data=data)
 
 @app.route("/api/cars/<car_id>/favourite", methods=["POST"])
@@ -293,7 +295,7 @@ def search():
 
     data = []
 
-    if cars == []:
+    if cars is None:
         return jsonify({"message": "No cars available with that criteria", 'errors': []})
 
     for car in cars:
@@ -344,7 +346,7 @@ def get_user_favourites(user_id):
     favourites = Favourites.query.filter_by(user_id=user_id).all()
     data = []
 
-    if favourites == []:
+    if favourites is None:
         return jsonify({"message": "User has no favourites", 'errors': []})
 
     for favourite in favourites:
