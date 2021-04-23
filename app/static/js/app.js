@@ -358,8 +358,6 @@ const Explore = {
     }
 };
 
-
-
 const Profile = {
     name: 'Profile',
     template: `
