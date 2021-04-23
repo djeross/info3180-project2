@@ -272,6 +272,48 @@ def favourite(car_id):
 
     return jsonify(data=data)
 
+@app.route('/api/search', methods=['GET'])
+@requires_auth
+def search():
+
+    form = ExploreForm(request.args)
+
+    
+    make = form.make.data
+    model = form.model.data
+    
+    if (make == "") and (model != ""):
+        cars = Cars.query.filter_by(model=model).all()
+    elif (make != "") and (model == ""):
+        cars = Cars.query.filter_by(make=make).all()
+    elif (make != "") and (model != ""):
+        cars = Cars.query.filter_by(make=make,model=model).all()
+    else:
+        cars = cars = db.session.query(Cars).all()
+
+    data = []
+
+    if cars == []:
+        return jsonify({"message": "No cars available with that criteria", 'errors': []})
+
+    for car in cars:
+        data.append({
+            'id': car.id,
+            'description': car.description,
+            'year': car.year,
+            'make': car.make,
+            'model': car.model,
+            'colour': car.colour,
+            'transmission': car.transmission,
+            'type': car.car_type,
+            'price': car.price,
+            'photo': car.photo,
+            'user_id': car.userid
+        })
+
+    return jsonify(data=data)
+   
+
 @app.route("/api/users/<user_id>", methods=["GET"])
 @requires_auth
 def get_user(user_id):

@@ -288,7 +288,7 @@ const Explore = {
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
-                    <form id="explore-form" method="post">
+                    <form id="explore-form" method="GET" @submit.prevent="search()">
                         <div class="form-group col-4">
                             <label for="make">Make</label>
                             <input type="text" class="form-control" name="make" />
@@ -359,7 +359,45 @@ const Explore = {
         getCarDetails: function(event) {
             event.preventDefault();
             alert(event.target.getAttribute("href"));
+        },
+        search: function() {
+            let self = this;
+            let exploreForm = document.getElementById('explore-form');
+            let form_data = new FormData(exploreForm);
             
+            let form_values = []
+
+            for (var p of form_data) {
+                form_values.push(p[1].trim());
+            }
+
+            //console.log(form_values);
+
+            let make = form_values[0];
+            let model = form_values[1];
+
+            //console.log(make);
+            //console.log(model);
+
+            fetch("/api/search?make=" + make + "&model=" + model, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': token,
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                credentials: 'same-origin'        
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                console.log('success');
+                console.log(jsonResponse);
+                self.listOfCars = jsonResponse.data;
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
         }
     }
 };
