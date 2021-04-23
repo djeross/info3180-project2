@@ -28,7 +28,7 @@ app.component('app-header', {
                 <router-link class="nav-link" to="/explore">Explore <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-                <router-link class="nav-link" to="/">My Profile <span class="sr-only">(current)</span></router-link>
+                <router-link class="nav-link" to="/users/">My Profile <span class="sr-only">(current)</span></router-link>
             </li>
         </ul>
       
@@ -176,6 +176,7 @@ const Register = {
                 console.log('success');
                 console.log(jsonResponse);
                 router.push('/login');
+                swal({title: "Register",text: "User Successfully registered",icon: "success",button: "Proceed"});
             })
             .catch(function(error) {
                 console.log(error);
@@ -303,7 +304,7 @@ const Explore = {
                 </div>  
 
                 <div class="carslist">
-                <div v-for="cars in listOfCars.slice(0, 3)">
+                <div v-for="cars in listOfCars">
                     <div class="card" style="width: 18rem;">
                         <img class="card-img-top favcar"  :src="cars.photo">
                         <div class="card-body">
@@ -320,7 +321,7 @@ const Explore = {
                                 </a>
 
                             </div>
-                            <a href="#" class="btn btn-primary card-view-btn">View more details</a>
+                            <a :href="cars.id" class="btn btn-primary card-view-btn" @click="getCarDetails">View more details</a>
                         </div>
                     </div>
                 </div>
@@ -328,14 +329,8 @@ const Explore = {
             </div>
         </div>
     `,
-    data() {
-        return {
-            listOfCars : [{'photo':"/static/images/car1.jpg",'make':"Tesla",'model':"Model s",'price':"500,000",'year':"2019"},
-{'photo':"/static/images/car2.jpg",'make':"Toyota",'model':"RX Sport",'price':"1,000,000",'year':"2021"},
-{'photo':"/static/images/car3.jpg",'make':"Nissan",'model':"GTR-x",'price':"20,000,000",'year':"2018"}]
-        }
-    },
-    created: function() {
+    created() {
+        let self = this;
         fetch("/api/cars", {
             method: 'GET',
             headers: {
@@ -348,14 +343,25 @@ const Explore = {
             return response.json();
         })
         .then(function(jsonResponse) {
-            console.log(jsonResponse);
-            console.log(jsonResponse.data)
             self.listOfCars = jsonResponse.data;
+            console.log(jsonResponse.data)
         })
         .catch(function(error) {
             console.log(error);
         });
-    } 
+    },
+    data() {
+        return {
+            listOfCars : []
+        }
+    },
+    methods: {
+        getCarDetails: function(event) {
+            event.preventDefault();
+            alert(event.target.getAttribute("href"));
+            
+        }
+    }
 };
 
 
@@ -368,7 +374,7 @@ const Profile = {
 
                 <div id="profile">
                     <div id="profileimagediv">
-                        <img class="favcar" id="round" :src="userInfo[0].photo">
+                        <img class="favcar" id="round" src="./uploads/5dc098e0d8d84605b9674ef9.jpg">
                     </div>
                     <div id="profiledetailsdiv" class="descriptions">
                         <h2 id="profile-name">{{userInfo[0].name}}</h2>
@@ -428,11 +434,11 @@ const Profile = {
         }
     }, 
     methods: {
-        getUser: function() {
+        getUser() {
             
         },
 
-        getTopFavs: function() {
+        getTopFavs() {
             
         },
     }
@@ -498,6 +504,7 @@ const CarDetails = {
             event.target.classList.toggle("fa-heart-o");
             event.target.classList.toggle("fa-heart");
             if(event.target.classList.contains("fa-heart")===true){
+                alert()
                 alert("added to Fav list");
             }
             else{
@@ -571,7 +578,7 @@ const AddCar = {
             </div>
             <div class="">
                 <label class="" for="photo">Upload Photo</label><br>
-                <input type="file" class="form-control form-field" name="photo" accept="image/x-png,image/jpg" required>
+                <input type="file" class="form-control form-field" name="photo" accept=".jpeg, .jpg, .png" required>
             </div>
             <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Save</button>
         </form>
@@ -632,7 +639,7 @@ const routes = [
     { path: "/login", component: Login },
     { path: "/logout", component: Logout },
     { path: "/explore", component: Explore },
-    { path: "/users/:id", component: Profile },
+    { path: `/users/:id`, component: Profile },
     { path: "/cars/new", component: AddCar },
     { path: "/cars/:id", component: CarDetails},
 
