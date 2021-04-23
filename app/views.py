@@ -287,7 +287,7 @@ def favourite(car_id):
 @requires_auth
 def remove_favourite(car_id):
 
-    Favourites.query.filter_by(car_id=car_id).delete()
+    Favourites.query.filter(Favourites.car_id == car_id).filter(Favourites.user_id == g.current_user["id"] ).first().delete()
 
     data = [{
         'message': 'Car Successfully Unfavourited',
