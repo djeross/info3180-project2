@@ -100,7 +100,7 @@ def register():
                         'id': user.id,
                         'username': username,
                         'name': fullname,
-                        'photo': "/uploads/"+photofilename,
+                        'photo': "/uploads/"+filename,
                         'email': email,
                         'location': location,
                         'biography': biography,
@@ -183,7 +183,7 @@ def cars():
 
             data = [
                 {
-                #'id': id,
+                'id': g.current_user["id"],
                 'description': description,
                 'year': year,
                 'make': make,

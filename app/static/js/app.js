@@ -84,7 +84,7 @@ const Home = {
                 <h1 class="font-weight-bold">Buy and Sell Cars Online</h1>
                 <p class="mt-2 mb-4 text-secondary">United Auto Sales provides the fastest, easiest and most user friendly way to buy or sell cars online. Find a Great Price on the Vehicle You Want</p>
                 <div class="flex-area">
-                    <button @click="toRegister" class="btn bg-primary text-white" id="register-btn" type="button">Resister</button>
+                    <button @click="toRegister" class="btn bg-primary text-white" type="button">Resister</button>
                     <button @click="toLogin" class="btn text-white Dahalia-Rodje-color" type="button">Login</button>
                 </div>
             </div>
@@ -283,7 +283,7 @@ const Logout = {
 const Explore = {
     name: 'Explore',
     template: `
-        <div class="container maincontainer" v-if="listOfCars[0]" v-if="isLoggedIn()">
+        <div class="container maincontainer" v-if="listOfCars[0]">
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
@@ -402,21 +402,14 @@ const Explore = {
             .catch(function(error) {
                 console.log(error);
             });
-        },
-        isLoggedIn: function() {
-            if (localStorage.hasOwnProperty('token') === true) {
-                return true;
-            }
-            router.push('/');
         }
     }
-    
 };
 
 const Profile = {
     name: 'Profile',
     template: `
-        <div class="container maincontainer" v-if="isLoggedIn()">
+        <div class="container maincontainer">
             <div id="displayfav">
 
                 <div id="profile">
@@ -512,18 +505,13 @@ const Profile = {
             event.preventDefault();
             let carid=event.target.getAttribute("href");
             router.push({ name: 'details', params: { id: carid}}); 
-        },
-        isLoggedIn: function() {
-            if (localStorage.hasOwnProperty('token') === true) {
-                return true;
-            }
-            router.push('/');
         }
     },
     data() {
         return {
             listOfCars: [],
-            userInfo: []
+            userInfo: [],
+            host:window.location.protocol + "//" + window.location.host
         }
     }
 };
@@ -531,7 +519,7 @@ const Profile = {
 const CarDetails = {
     name: 'CarDetails',
     template: `
-        <div class="container maincontainer" v-if="isLoggedIn()">
+        <div class="container maincontainer">
             <div id="display-car-details" v-if="details[0]">
                 <div id="car-details-card">
                     <img id="car-d-image" class="car-detail-image" :src="details[0].photo" alt="car image in card">
@@ -667,12 +655,6 @@ const CarDetails = {
             }
             return false;
         
-        },
-        isLoggedIn: function() {
-            if (localStorage.hasOwnProperty('token') === true) {
-                return true;
-            }
-            router.push('/');
         }
     },
     data(){
@@ -686,7 +668,7 @@ const CarDetails = {
 const AddCar = {
     name: 'AddCar',
     template: `
-    <div class="container maincontainer"  v-if="isLoggedIn()">
+    <div class="container maincontainer">
     <div class="m-4 ">
         <h1 class="mb-4" id="addnew">Add New Car</h1>
         <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar()">
@@ -785,12 +767,6 @@ const AddCar = {
                 console.log(error);
             });
     
-        },
-        isLoggedIn: function() {
-            if (localStorage.hasOwnProperty('token') === true) {
-                return true;
-            }
-            router.push('/');
         }
         
     }
