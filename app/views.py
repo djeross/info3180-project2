@@ -61,7 +61,6 @@ def requires_auth(f):
 
 @app.route('/api/register', methods=['POST'])
 def register():
-
     form = RegisterForm()
     errors = []
 

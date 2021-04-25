@@ -28,7 +28,7 @@ app.component('app-header', {
                 <router-link class="nav-link" to="/explore">Explore <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-                <router-link class="nav-link" :to="{ name: 'users', params: {id: ${localStorage.getItem("current_user")}}}">My Profile <span class="sr-only">(current)</span></router-link>
+                <a href="#" class="nav-link" @click="idpush" >My Profile <span class="sr-only">(current)</span></a>
             </li>
         </ul>
       
@@ -56,6 +56,10 @@ app.component('app-header', {
                 return true;
             }
             return false;
+        },
+        idpush(){
+            let user=localStorage.getItem("current_user");
+            router.push({ name: 'users', params: { id: user}}); 
         }
     }
 });
@@ -226,7 +230,6 @@ const Login = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                
                 if(jsonResponse.errors==undefined){
                     if(jsonResponse.token !== null) {
                         let jwt_token = jsonResponse.data.token;
@@ -269,8 +272,8 @@ const Logout = {
           return response.json();
         })
         .then(function(jsonResponse){
-            localStorage.removeItem('token');
-            localStorage.removeItem('current_user');
+            window.localStorage.removeItem('token');
+            window.localStorage.removeItem('current_user');
             router.push('/');
         })
         .catch(function(error){
@@ -753,6 +756,7 @@ const AddCar = {
                 credentials: 'same-origin'        
             })
             .then(function(response) {
+                console.log(response);
                 return response.json();
             })
             .then(function(jsonResponse) {
