@@ -173,7 +173,6 @@ const Register = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log(jsonResponse)
                 if(jsonResponse.errors==undefined){
                     router.push('/login');
                     swal({title: "Register",text: "User Successfully registered",icon: "success",button: "Proceed"});
@@ -395,8 +394,6 @@ const Explore = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log('success');
-                console.log(jsonResponse);
                 self.listOfCars = jsonResponse.data.reverse();
             })
             .catch(function(error) {
@@ -619,7 +616,6 @@ const CarDetails = {
                     return response.json();
                 })
                 .then(function(jsonResponse) {
-                    console.log(jsonResponse.data)
                     if (jsonResponse.message!=undefined) {
                         
                     }
@@ -726,7 +722,7 @@ const AddCar = {
             </div>
             <div class="mt-sm-3 mb-sm-1">
                 <label class="" for="description">Description</label><br>
-                <textarea name="description" class="form-control" required></textarea><br>
+                <textarea name="description" class="form-control" rows="4" required></textarea><br>
             </div>
             <div class="">
                 <label class="" for="photo">Upload Photo</label><br>
@@ -760,8 +756,13 @@ const AddCar = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                router.push('/explore');
-                swal({title: "Add Car",text: jsonResponse.message,icon: "success",button: "Proceed"});
+                if(jsonResponse.data){
+                    router.push('/explore');
+                    swal({title: "Add Car",text: jsonResponse.message,icon: "success",button: "Proceed"});
+                }else{
+                    swal({title: "Add Car",text: jsonResponse.errors[0],icon: "error",button: "Try Again"});
+                }
+                
             })
             .catch(function(error) {
                 console.log(error);
