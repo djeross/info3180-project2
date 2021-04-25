@@ -11,7 +11,7 @@ const app = Vue.createApp({
 app.component('app-header', {
     name: 'AppHeader',
     template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" :key="$route.fullPath">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="nav-resize" :key="$route.fullPath">
     <router-link class="nav-link text-white" to="/" v-if="!isLoggedIn()"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</router-link>
     <router-link class="nav-link text-white" to="/explore" v-if="isLoggedIn()"><i class="fa fa-car"></i>&nbsp&nbsp&nbsp&nbspUnited Auto Sales</router-link>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,8 +84,8 @@ const Home = {
                 <h1 class="font-weight-bold">Buy and Sell Cars Online</h1>
                 <p class="mt-2 mb-4 text-secondary">United Auto Sales provides the fastest, easiest and most user friendly way to buy or sell cars online. Find a Great Price on the Vehicle You Want</p>
                 <div class="flex-area">
-                    <button @click="toRegister" class="btn bg-primary text-white" type="button">Resister</button>
-                    <button @click="toLogin" class="btn bg-secondary text-white" type="button">Login</button>
+                    <button @click="toRegister" class="btn bg-primary text-white" id="register-btn" type="button">Resister</button>
+                    <button @click="toLogin" class="btn text-white Dahalia-Rodje-color" type="button">Login</button>
                 </div>
             </div>
             <div class="fit col-md-6">
@@ -145,7 +145,7 @@ const Register = {
                     <label class="" for="photo">Upload Photo</label><br>
                     <input type="file" class="form-control form-field" name="photo" accept=".jpeg, .jpg, .png">
                 </div>
-                <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Register</button>
+                <button type="submit" name="submit" class="btn  text-white mt-sm-3 mb-sm-1 Dahalia-Rodje-color">Register</button>
             </form>
         </div>
         </div>
@@ -202,7 +202,7 @@ const Login = {
                     <label class="" for="biography">Password</label><br>
                     <input type="password" class="form-control form-field login-field" name="password" required>
                 </div>
-                <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1 login-field">Login</button>
+                <button type="submit" name="submit" class="btn  text-white mt-sm-3 mb-sm-1 Dahalia-Rodje-color login-field">Login</button>
             </form>
         </div>
     `,
@@ -283,7 +283,7 @@ const Logout = {
 const Explore = {
     name: 'Explore',
     template: `
-        <div class="container maincontainer">
+        <div class="container maincontainer" v-if="listOfCars[0]" v-if="isLoggedIn()">
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
@@ -297,7 +297,7 @@ const Explore = {
                             <input type="text" class="form-control" name="model" />
                         </div>
                         <div class="form-group search-btn-div">
-                            <button type="submit" class="btn btn-success search-btn">Search</button>
+                            <button type="submit" class="btn btn-success Dahalia-Rodje-color search-btn">Search</button>
                             </div>
                     </form>
                 </div>  
@@ -314,7 +314,7 @@ const Explore = {
                                     <span class="graytext">{{cars.model}}</span>
                                 </div>
 
-                                <a href="#" class="btn btn-success card-price-btn">
+                                <a href="#" class="btn btn-success Dahalia-Rodje-color card-price-btn">
                                     <img class="icons" src='/static/images/tagicon.png'>
                                     <span><span>$</span>{{cars.price}}</span>
                                 </a>
@@ -342,7 +342,16 @@ const Explore = {
             return response.json();
         })
         .then(function(jsonResponse) {
-            self.listOfCars = jsonResponse.data;
+            let count=0
+            let temp=[]
+            for (let index = jsonResponse.data.length-1; index < jsonResponse.data.length; index--) {
+                if (count==3){
+                    break;
+                }
+                temp.push(jsonResponse.data[index]);
+                count++;  
+            }
+            self.listOfCars=temp;
         })
         .catch(function(error) {
             console.log(error);
@@ -356,8 +365,8 @@ const Explore = {
     methods: {
         getCarDetails: function(event) {
             event.preventDefault();
-        let carid=event.target.getAttribute("href");
-        router.push({ name: 'details', params: { id: carid}}); 
+            let carid=event.target.getAttribute("href");
+            router.push({ name: 'details', params: { id: carid}}); 
         },
 
         search: function() {
@@ -388,24 +397,31 @@ const Explore = {
             .then(function(jsonResponse) {
                 console.log('success');
                 console.log(jsonResponse);
-                self.listOfCars = jsonResponse.data;
+                self.listOfCars = jsonResponse.data.reverse();
             })
             .catch(function(error) {
                 console.log(error);
             });
+        },
+        isLoggedIn: function() {
+            if (localStorage.hasOwnProperty('token') === true) {
+                return true;
+            }
+            router.push('/');
         }
     }
+    
 };
 
 const Profile = {
     name: 'Profile',
     template: `
-        <div class="container maincontainer">
+        <div class="container maincontainer" v-if="isLoggedIn()">
             <div id="displayfav">
 
                 <div id="profile">
                     <div id="profileimagediv">
-                        <img class="favcar" id="round" src="./uploads/5dc098e0d8d84605b9674ef9.jpg">
+                        <img class="favcar" id="round" :src="userInfo.photo">
                     </div>
                     <div id="profiledetailsdiv" class="descriptions">
                         <h2 id="profile-name">{{userInfo.name}}</h2>
@@ -429,7 +445,7 @@ const Profile = {
                 <div class="carsfavtext"><h1>Cars Favourited</h1></div>
 
                 <div class="carslist">
-                <div v-for="cars in listOfCars.slice(0, 3)">
+                <div v-for="cars in listOfCars">
                     <div class="card" style="width: 18rem;">
                         <img class="card-img-top favcar"  :src="cars.photo">
                         <div class="card-body">
@@ -440,7 +456,7 @@ const Profile = {
                                     <span class="graytext">{{cars.model}}</span>
                                 </div>
 
-                                <a href="#" class="btn btn-success card-price-btn">
+                                <a href="#" class="btn btn-success card-price-btn Dahalia-Rodje-color">
                                     <img class="icons" src='/static/images/tagicon.png'>
                                     <span><span>$</span>{{cars.price}}</span>
                                 </a>
@@ -496,6 +512,12 @@ const Profile = {
             event.preventDefault();
             let carid=event.target.getAttribute("href");
             router.push({ name: 'details', params: { id: carid}}); 
+        },
+        isLoggedIn: function() {
+            if (localStorage.hasOwnProperty('token') === true) {
+                return true;
+            }
+            router.push('/');
         }
     },
     data() {
@@ -509,36 +531,54 @@ const Profile = {
 const CarDetails = {
     name: 'CarDetails',
     template: `
-        <div class="container maincontainer">
+        <div class="container maincontainer" v-if="isLoggedIn()">
             <div id="display-car-details" v-if="details[0]">
                 <div id="car-details-card">
-                    <img id="car-d-image" class="car-detail-image" src='/static/images/car1.jpg' alt="car image in card">
+                    <img id="car-d-image" class="car-detail-image" :src="details[0].photo" alt="car image in card">
                     <div id="car-details">
                         <h1 id="car-d-heading" > {{details[0].year.concat(" ",details[0].make)}}</h1>
                         <h4 class="graytext">{{details[0].model}}</h4>
                         <p class="car-d-description graytext">{{details[0].description}}</p>
-                        <div id="cpbd">
-                            <div id="cp">
-                                <div>
-                                    <p class="car-d-spec graytext">Color</p>
-                                    <p class="car-d-spec graytext">Price</p>
+                        <div id="reduce-gap">
+                            <div class="cpbd">
+                                <div class="cp">
+                                    <div>
+                                        <p class="car-d-spec graytext">Color</p>
+                                    </div>
+                                    <div>
+                                        <p class="car-d-spec">{{details[0].colour}}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="car-d-spec">{{details[0].colour}}</p>
-                                    <p class="car-d-spec">{{details[0].price}}</p>
+                                <div class="bd">
+                                    <div>
+                                        <p class="car-d-spec graytext">Body Type</p>
+                                    </div>
+                                    <div>
+                                        <p class="car-d-spec">{{details[0].type}}</p>
+                                    </div>
                                 </div>
+                                <br>
                             </div>
-                            <div id="bd">
-                                <div>
-                                    <p class="car-d-spec graytext">Body Type</p>
-                                    <p class="car-d-spec graytext">Transmission</p>
+
+                            <div class="cpbd">
+                                <div class="cp">
+                                    <div>
+                                        <p class="car-d-spec graytext">Price</p>
+                                    </div>
+                                    <div>
+                                        <p class="car-d-spec">{{details[0].price}}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="car-d-spec">{{details[0].type}}</p>
-                                    <p class="car-d-spec">{{details[0].transmission}}</p>
+                                <div class="bd">
+                                    <div>
+                                        <p class="car-d-spec graytext">Transmission</p>
+                                    </div>
+                                    <div>
+                                        <p class="car-d-spec">{{details[0].transmission}}</p>
+                                    </div>
                                 </div>
+                                <br>
                             </div>
-                            <br>
                         </div>
                         <div id="card-d-btns" >
                             <a href="#" class="btn btn-success email-owner">Email Owner</a>
@@ -568,8 +608,6 @@ const CarDetails = {
         .then(function(jsonResponse){
             self.details = jsonResponse.data;
             this.isFav=jsonResponse.isFav;
-            console.log(jsonResponse.isFav);
-            console.log(jsonResponse.data);
         })
         .catch(function(error) {
             console.log(error);
@@ -629,6 +667,12 @@ const CarDetails = {
             }
             return false;
         
+        },
+        isLoggedIn: function() {
+            if (localStorage.hasOwnProperty('token') === true) {
+                return true;
+            }
+            router.push('/');
         }
     },
     data(){
@@ -642,8 +686,9 @@ const CarDetails = {
 const AddCar = {
     name: 'AddCar',
     template: `
-    <div class="m-4">
-        <h1 class="mb-4">Add New Car</h1>
+    <div class="container maincontainer"  v-if="isLoggedIn()">
+    <div class="m-4 ">
+        <h1 class="mb-4" id="addnew">Add New Car</h1>
         <form method="POST" class="form" action="" id="car-form" @submit.prevent="addCar()">
             <div class="mt-sm-1 mb-sm-1 d-flex flex-area1">
                 <div>
@@ -705,8 +750,9 @@ const AddCar = {
                 <label class="" for="photo">Upload Photo</label><br>
                 <input type="file" class="form-control form-field" name="photo" accept=".jpeg, .jpg, .png" required>
             </div>
-            <button type="submit" name="submit" class="btn bg-secondary text-white mt-sm-3 mb-sm-1">Save</button>
+            <button type="submit" name="submit" class="btn Dahalia-Rodje-color text-white mt-sm-3 mb-sm-1">Save</button>
         </form>
+    </div>
     </div>
     `,
     data() {
@@ -732,14 +778,19 @@ const AddCar = {
                 return response.json();
             })
             .then(function(jsonResponse) {
-                console.log('success');
-                console.log(jsonResponse);
                 router.push('/explore');
+                swal({title: "Add Car",text: jsonResponse.message,icon: "success",button: "Proceed"});
             })
             .catch(function(error) {
                 console.log(error);
             });
     
+        },
+        isLoggedIn: function() {
+            if (localStorage.hasOwnProperty('token') === true) {
+                return true;
+            }
+            router.push('/');
         }
         
     }

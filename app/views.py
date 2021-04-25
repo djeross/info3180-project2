@@ -7,7 +7,7 @@ This file creates your application.
 
 import os
 from app import app, db, login_manager, csrf
-from flask import render_template, request, redirect, url_for, flash, jsonify, g
+from flask import render_template, request, redirect, url_for, flash, jsonify, g, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from app.models import Users,Favourites,Cars
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -100,7 +100,7 @@ def register():
                         'id': user.id,
                         'username': username,
                         'name': fullname,
-                        'photo': filename,
+                        'photo': "/uploads/"+photofilename,
                         'email': email,
                         'location': location,
                         'biography': biography,
@@ -180,7 +180,6 @@ def cars():
             db.session.add(newCar)
             db.session.commit()
             
-            flash('Car successfully added.', 'success')
 
             data = [
                 {
@@ -193,11 +192,12 @@ def cars():
                 'transmission': transmission,
                 'type': car_type,
                 'price': price,
-                'photo': filename,
+                'photo': "/uploads/"+filename,
                 'user_id': '#'
             }]
+            message="Car successfully added."
 
-            return jsonify(data=data)
+            return jsonify(data=data,message=message)
 
         else:
             return jsonify(errors=form_errors(form))
@@ -223,7 +223,7 @@ def get_all_cars():
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.photo,
+            'photo': "/uploads/"+car.photo,
             'user_id': car.userid
         })
 
@@ -247,7 +247,7 @@ def get_car(car_id):
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.photo,
+            'photo': "/uploads/"+car.photo,
             'user_id': car.userid
     }]
 
@@ -332,7 +332,7 @@ def search():
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.photo,
+            'photo': "/uploads/"+car.photo,
             'user_id': car.userid
         })
 
@@ -352,7 +352,7 @@ def get_user(user_id):
         'id': user.id,
         'username': user.username,
         'name': user.name,
-        'photo': user.photo,
+        'photo': "/uploads/"+user.photo,
         'email': user.email,
         'location': user.location,
         'biography': user.biography,
@@ -386,13 +386,15 @@ def get_user_favourites(user_id):
             'transmission': car.transmission,
             'type': car.car_type,
             'price': car.price,
-            'photo': car.photo,
+            'photo': "/uploads/"+car.photo,
             'user_id': car.userid
         })
-
     return jsonify(data=data)
 
-
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    root_dir = os.getcwd()
+    return send_from_directory(os.path.join(root_dir,app.config['UPLOAD_FOLDER']),filename)
 
 @app.route('/test')
 def test():
