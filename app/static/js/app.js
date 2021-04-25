@@ -28,7 +28,7 @@ app.component('app-header', {
                 <router-link class="nav-link" to="/explore">Explore <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-                <router-link class="nav-link" :to="{ name: 'users', params: {id: ${localStorage.getItem("current_user")}}}">My Profile <span class="sr-only">(current)</span></router-link>
+                <router-link class="nav-link" :to="{ name: 'users', params: {id: ${userInfo.name}}}">My Profile <span class="sr-only">(current)</span></router-link>
             </li>
         </ul>
       
@@ -47,8 +47,30 @@ app.component('app-header', {
       </div>
     </nav>
     `,
+    created: function() {
+        let self=this;
+            fetch("/api/users/"+ localStorage.getItem('current_user'), {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': token,
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                },
+                credentials: 'same-origin'        
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonResponse) {
+                self.userInfo = jsonResponse.data;
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    },
     data() {
-        return {}
+        return {
+            userInfo: []
+        }
     }, 
     methods: {
         isLoggedIn: function() {
