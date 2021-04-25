@@ -356,10 +356,15 @@ def get_user(user_id):
         'email': user.email,
         'location': user.location,
         'biography': user.biography,
-        'date_joined': user.date
+        'date_joined': convert(user.date)
     }
-
     return jsonify(data=data)
+
+def convert(datetime):
+    months = {'1':'January','2':'February','3':'March','4':'April','5':'May','6':'June',
+'7':'July','8':'August','9':'September','10':'October','11':'November','12':'December'}
+    dt = datetime.strptime(str(datetime), '%Y-%m-%d %H:%M:%S')
+    return months.get(str(dt.month))+" "+str(dt.day)+","+str(dt.year)
 
 @app.route("/api/users/<user_id>/favourites", methods=["GET"])
 @requires_auth

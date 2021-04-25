@@ -282,7 +282,7 @@ const Logout = {
 const Explore = {
     name: 'Explore',
     template: `
-        <div class="container maincontainer">
+        <div class="container maincontainer" >
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
