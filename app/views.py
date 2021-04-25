@@ -183,7 +183,7 @@ def cars():
 
             data = [
                 {
-                #'id': id,
+                'id': g.current_user["id"],
                 'description': description,
                 'year': year,
                 'make': make,
