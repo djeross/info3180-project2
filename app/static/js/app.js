@@ -282,7 +282,7 @@ const Logout = {
 const Explore = {
     name: 'Explore',
     template: `
-        <div class="container maincontainer" v-if="listOfCars[0]">
+        <div class="container maincontainer" >
             <div id="displayexplore">
                 <h1>Explore</h1>
                 <div id="explore-search">
@@ -301,7 +301,7 @@ const Explore = {
                     </form>
                 </div>  
 
-                <div class="carslist">
+                <div class="carslist" v-if="listOfCars[0]">
                 <div v-for="cars in listOfCars">
                     <div class="card" style="width: 18rem;">
                         <img class="card-img-top favcar"  :src="cars.photo">
