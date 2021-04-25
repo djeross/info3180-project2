@@ -48,7 +48,7 @@ class Cars(db.Model):
     make = db.Column(db.String(100))
     model = db.Column(db.String(100))
     colour = db.Column(db.String(50))
-    year = db.Column(db.String(10)) #changed because I got an error saying 'value too long for type character varying(4)'
+    year = db.Column(db.String(10))
     transmission = db.Column(db.String(100))
     car_type = db.Column(db.String(100))
     price = db.Column(db.Float)
