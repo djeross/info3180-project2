@@ -344,12 +344,12 @@ const Explore = {
         .then(function(jsonResponse) {
             let count=0
             let temp=[]
-            for (let index = jsonResponse.data.length-1; index < jsonResponse.data.length; index--) {
-                if (count==3){
+            let carz=jsonResponse.data.reverse()
+            for (let index = 0; index < carz.length; index++) {
+                if (index==3){
                     break;
                 }
-                temp.push(jsonResponse.data[index]);
-                count++;  
+                temp.push(jsonResponse.data[index]); 
             }
             self.listOfCars=temp;
         })
