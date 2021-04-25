@@ -100,7 +100,7 @@ def register():
                         'id': user.id,
                         'username': username,
                         'name': fullname,
-                        'photo': "/uploads/"+photofilename,
+                        'photo': "/uploads/"+filename,
                         'email': email,
                         'location': location,
                         'biography': biography,
@@ -193,7 +193,7 @@ def cars():
                 'type': car_type,
                 'price': price,
                 'photo': "/uploads/"+filename,
-                'user_id': '#'
+                'user_id': g.current_user["id"]
             }]
             message="Car successfully added."
 
