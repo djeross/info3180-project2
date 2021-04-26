@@ -405,7 +405,7 @@ def test():
     return render_template("fav.html")
 
 
-# Please create all new routes and view functions above this route.
+## Please create all new routes and view functions above this route.
 # This route is now our catch all route for our VueJS single page
 # application.
 @app.route('/', defaults={'path': ''})
