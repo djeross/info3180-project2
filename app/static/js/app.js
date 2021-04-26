@@ -569,7 +569,7 @@ const CarDetails = {
                             </div>
                         </div>
                         <div id="card-d-btns" >
-                            <a href="#" class="btn btn-success email-owner">Email Owner</a>
+                            <a href="#" class="btn btn-success email-owner Dahalia-Rodje-color">Email Owner</a>
                             <div id="card-d-heart" >
                                 <button href="#" v-if="checkfav()" @click="addFavourite" id="heartbtn" class="heart fa fa-heart"></button>
                                 <button href="#" v-else @click="addFavourite" id="heartbtn" class="heart fa fa-heart-o fa-heart"></button>
