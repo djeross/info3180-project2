@@ -3,8 +3,6 @@
 ## Developers
 - Rodje Ross
 - Dahalia Howell
-- Imani Miller
-- Jahrel Mckenzie
 
 
 ### Heroku App
